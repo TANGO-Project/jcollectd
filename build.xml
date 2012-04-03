@@ -1,5 +1,18 @@
-<project name="jcollectd" default="test" basedir=".">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="jcollectd" default="dist">
   <description>Java collectd</description>
+
+    <property name="src.dir" location="src/main/java" />
+    <property name="src.test" location="src/test/java" />
+    <property name="lib.dir" value="lib" />
+    <property name="build.dir" value="build" />
+
+    <property name="classes" value="${build.dir}/classes" />
+    <property name="jars.dir" value="${build.dir}/jar" />
+
+    <path id="classpath">
+        <fileset dir="${lib.dir}" includes="**/*.jar" />
+    </path>
+
   <property name="src.main" location="src/main/java" />
   <property name="src.test" location="src/test/java" />
   <property name="target" location="target" />
@@ -8,7 +21,6 @@
   <property name="dist"  value="${target}/${dist.name}"/>
 
   <property name="debug" value="true" />
-  <available property="junit" classname="junit.framework.Test"/>
 
   <path id="alljars">
      <fileset dir="${target}" includes="lib/collectd.jar"/>
@@ -19,7 +31,8 @@
     <mkdir dir="${target}/lib"/>
   </target>
 
-  <target name="compile-tests" depends="init,compile" if="junit">
+  <target name="compile-tests" depends="init,compile">
+      <ivy:retrieve conf="test" sync="true"/>
     <javac destdir="${target}/classes"
            debug="${debug}"
            source="1.5" target="1.5"
@@ -29,6 +42,7 @@
   </target>
 
   <target name="compile" depends="init">
+      <ivy:retrieve conf="compile" sync="true"/>
     <javac destdir="${target}/classes"
            debug="${debug}"
            source="1.5" target="1.5">
@@ -51,7 +65,7 @@
     </jar>
   </target>
 
-  <target name="test" depends="compile-tests,jar" if="junit">
+  <target name="test" depends="compile-tests,jar">
     <property name="testresults"
               location="${target}/testresults"/>
 
