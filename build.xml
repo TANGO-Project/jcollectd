@@ -69,4 +69,6 @@
         </junit>
     </target>
 
+    <target name="dist" depends="test"/>
+
 </project>
