@@ -72,7 +72,6 @@
         <jar jarfile="${dist.jar}">
             <fileset dir="${build.dir}/classes"
                      excludes="**/*Test.class" />
-            <!--fileset dir="META-INF"/-->
             <manifest>
                 <attribute name="Main-Class"
                            value="org.collectd.mx.MBeanReceiver"/>
