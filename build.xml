@@ -34,7 +34,6 @@
         <mkdir dir="${classes}/META-INF"/>
         <copy todir="${classes}/META-INF">
             <fileset dir="${src.dir}/META-INF"/>
-            <fileset dir="etc"/>
         </copy>
         <javac srcdir="${src.dir}" destdir="${classes}"
                debug="${debug}" source="1.6" target="1.6"/>
