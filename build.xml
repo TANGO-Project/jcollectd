@@ -19,7 +19,7 @@
 
     <property name="version" value="0.2.0-dev"/>
     <property name="dist.name" value="jcollectd-${version}"/>
-    <property name="dist" value="${build.dir}/${dist.name}"/>
+    <property name="dist.jar" value="${build.dir}/${dist.name}.jar"/>
 
     <property name="debug" value="true"/>
 
@@ -68,6 +68,18 @@
         </junit>
     </target>
 
-    <target name="dist" depends="test"/>
+    <target name="dist" depends="test">
+        <jar jarfile="${dist.jar}">
+            <fileset dir="${build.dir}/classes"
+                     excludes="**/*Test.class" />
+            <fileset dir="."/>
+            <manifest>
+                <attribute name="Main-Class"
+                           value="org.collectd.mx.MBeanReceiver"/>
+                <attribute name="Premain-Class"
+                           value="org.collectd.mx.RemoteMBeanSender"/>
+            </manifest>
+        </jar>
+    </target>
 
 </project>
