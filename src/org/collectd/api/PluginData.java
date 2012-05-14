@@ -33,14 +33,14 @@ public class PluginData {
     protected String _typeInstance = "";
 
     public PluginData() {
-        
+
     }
 
     public PluginData(PluginData pd) {
         _time = pd._time;
         _host = pd._host;
-        _plugin = pd._plugin;
-        _pluginInstance = pd._pluginInstance;
+        _plugin = pd._plugin.replaceAll("[\\s\"]", "_");
+        _pluginInstance = pd._pluginInstance.replaceAll("[\\s\"]", "_");
         _type = pd._type;
         _typeInstance = pd._typeInstance;
     }
@@ -66,7 +66,7 @@ public class PluginData {
     }
 
     public void setPlugin(String plugin) {
-        _plugin = plugin;
+        _plugin = plugin.replaceAll("[\\s\"]", "_");
     }
 
     public String getPluginInstance() {
@@ -74,7 +74,7 @@ public class PluginData {
     }
 
     public void setPluginInstance(String pluginInstance) {
-        _pluginInstance = pluginInstance;
+        _pluginInstance = pluginInstance.replaceAll("[\\s\"]", "_");
     }
 
     public String getType() {
@@ -115,7 +115,7 @@ public class PluginData {
         if (defined(_typeInstance)) {
             sb.append(DLM).append(_typeInstance);
         }
-        return sb.toString();        
+        return sb.toString();
     }
 
     public String toString() {
