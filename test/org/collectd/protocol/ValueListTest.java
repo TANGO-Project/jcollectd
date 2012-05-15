@@ -18,22 +18,21 @@
 
 package org.collectd.protocol;
 
-import java.io.IOException;
-import java.util.List;
-
-import org.collectd.api.Notification;
-import org.collectd.api.ValueList;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.collectd.api.Notification;
+import org.collectd.api.ValueList;
+
+import java.io.IOException;
+import java.util.List;
 
 public class ValueListTest extends TestCase {
 
     private static final String HOST = "localhost";
     private static final String PLUGIN = "collectd";
     private double values[] = {
-       1.0, 0.2, 30.0
+            1.0, 0.2, 30.0
     };
     private long interval = 10;
     private static final long now = 1226466789000L;
@@ -53,7 +52,7 @@ public class ValueListTest extends TestCase {
         vl.setTime(now);
         vl.setPlugin(PLUGIN);
         vl.setPluginInstance(ValueListTest.class.getName());
-        for (int i=0; i<values.length; i++) {
+        for (int i = 0; i < values.length; i++) {
             vl.addValue(new Double(values[i]));
         }
         return vl;
@@ -65,9 +64,9 @@ public class ValueListTest extends TestCase {
         assertEquals(vl.getTime(), now);
         assertEquals(vl.getPlugin(), PLUGIN);
         List<Number> vals = vl.getValues();
-        for (int i=0; i<values.length; i++) {
+        for (int i = 0; i < values.length; i++) {
             assertEquals(vals.get(i).doubleValue(), values[i]);
-        }        
+        }
     }
 
     public void testCreate() {
@@ -75,7 +74,7 @@ public class ValueListTest extends TestCase {
     }
 
     private final class TestPacketDispatcher
-        implements Dispatcher {
+            implements Dispatcher {
 
         public void dispatch(Notification notification) {
             //XXX
@@ -83,7 +82,7 @@ public class ValueListTest extends TestCase {
 
         public void dispatch(ValueList vl) {
             dummyAssert(vl);
-        }        
+        }
     }
 
     public void testWriter() throws IOException {

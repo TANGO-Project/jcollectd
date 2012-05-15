@@ -39,10 +39,14 @@ public class PluginData {
     public PluginData(PluginData pd) {
         _time = pd._time;
         _host = pd._host;
-        _plugin = pd._plugin.replaceAll("[\\s\"]", "_");
-        _pluginInstance = pd._pluginInstance.replaceAll("[\\s\"]", "_");
+        _plugin = strip(pd._plugin);
+        _pluginInstance = strip(pd._pluginInstance);
         _type = pd._type;
         _typeInstance = pd._typeInstance;
+    }
+
+    private String strip(String string) {
+        return string.replaceAll("[\\s\"]+", "_");
     }
 
     public long getTime() {
@@ -66,7 +70,7 @@ public class PluginData {
     }
 
     public void setPlugin(String plugin) {
-        _plugin = plugin.replaceAll("[\\s\"]", "_");
+        _plugin = strip(plugin);
     }
 
     public String getPluginInstance() {
@@ -74,7 +78,7 @@ public class PluginData {
     }
 
     public void setPluginInstance(String pluginInstance) {
-        _pluginInstance = pluginInstance.replaceAll("[\\s\"]", "_");
+        _pluginInstance = strip(pluginInstance);
     }
 
     public String getType() {

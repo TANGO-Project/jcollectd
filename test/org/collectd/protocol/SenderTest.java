@@ -18,28 +18,27 @@
 
 package org.collectd.protocol;
 
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import org.collectd.api.Notification;
+import org.collectd.api.ValueList;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.collectd.api.Notification;
-import org.collectd.api.ValueList;
-
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
 public class SenderTest
-    extends TestCase
-    implements Dispatcher {
+        extends TestCase
+        implements Dispatcher {
 
     private static long INTERVAL = 10;
     private static String PLUGIN = "junit";
     private static String PLUGIN_INSTANCE = "SenderTest";
     private static final String TYPE = "test";
 
-    private double dvals[] = { 1.0, 66.77, Double.MAX_VALUE };
-    private long lvals[] = { 1, 66, Long.MAX_VALUE, 4 };
+    private double dvals[] = {1.0, 66.77, Double.MAX_VALUE};
+    private long lvals[] = {1, 66, Long.MAX_VALUE, 4};
 
     private List<ValueList> _values = new ArrayList<ValueList>();
     protected Sender _sender;
@@ -89,14 +88,18 @@ public class SenderTest
 
     private void assertValueList(ValueList vl,
                                  String host, long time)
-        throws Exception {
+            throws Exception {
 
-        assertTrue(vl.getHost().equals(host));
-        assertTrue(vl.getTime()/1000 == time);
-        assertTrue(vl.getInterval() == INTERVAL);
-        assertTrue(vl.getPlugin().equals(PLUGIN));
-        assertTrue(vl.getPluginInstance().equals(PLUGIN_INSTANCE));
-        assertTrue(vl.getType().equals(TYPE));
+        assertEquals(vl.getHost(), host);
+        assertEquals(vl.getTime() / 1000, time);
+        assertEquals("GOT: " + INTERVAL + " EXPECTED: " + vl.getInterval(),
+                vl.getInterval(), INTERVAL);
+        assertEquals("GOT: " + PLUGIN + " EXPECTED: " + vl.getPlugin(),
+                vl.getPlugin(), PLUGIN);
+        assertEquals("GOT: " + PLUGIN_INSTANCE + "EXPECTED: " + vl.getPluginInstance(),
+                PLUGIN_INSTANCE, vl.getPluginInstance());
+        assertEquals("GOT: " + TYPE + "EXPECTED: " + vl.getPluginInstance(),
+                vl.getType(), TYPE);
     }
 
     private void flush() throws Exception {
@@ -113,14 +116,14 @@ public class SenderTest
         String host = vl.getHost();
         long time = vl.getTime() / 1000;
         flush();
-        assertTrue(_values.size() == 1);
+        assertEquals(_values.size(), 1);
         vl = _values.get(0);
         assertValueList(vl, host, time);
-        assertTrue(vl.getValues().size() == dvals.length);
-        int i=0;
+        assertEquals(vl.getValues().size(), dvals.length);
+        int i = 0;
         for (Number num : vl.getValues()) {
-            assertTrue(num.getClass() == Double.class);
-            assertTrue(num.doubleValue() == dvals[i++]);
+            assertEquals(num.getClass(), Double.class);
+            assertEquals(num.doubleValue(), dvals[i++]);
         }
         _values.clear();
     }
@@ -134,20 +137,20 @@ public class SenderTest
         String host = vl.getHost();
         long time = vl.getTime() / 1000;
         flush();
-        assertTrue(_values.size() == 1);
+        assertEquals(_values.size(), 1);
         vl = _values.get(0);
         assertValueList(vl, host, time);
-        assertTrue(vl.getValues().size() == lvals.length);
-        int i=0;
+        assertEquals(vl.getValues().size(), lvals.length);
+        int i = 0;
         for (Number num : vl.getValues()) {
-            assertTrue(num.getClass() == Long.class);
-            assertTrue(num.longValue() == lvals[i++]);
+            assertEquals(num.getClass(), Long.class);
+            assertEquals(num.longValue(), lvals[i++]);
         }
         _values.clear();
     }
-    
+
     public void dispatch(Notification notification) {
-        
+
     }
 
     public void dispatch(ValueList vl) {

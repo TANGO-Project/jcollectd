@@ -18,13 +18,13 @@
 
 package org.collectd.protocol;
 
-import java.io.IOException;
-import java.net.DatagramSocket;
-import java.util.logging.Logger;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+
+import java.io.IOException;
+import java.net.DatagramSocket;
+import java.util.logging.Logger;
 
 public class ReceiverTest extends TestCase {
 
@@ -55,15 +55,15 @@ public class ReceiverTest extends TestCase {
             } catch (Exception e) {
                 _error = e;
             }
-        }        
+        }
     }
 
     public void testBound() throws Exception {
         DatagramSocket socket = getReceiver().getSocket();
         assertTrue(socket.isBound());
         getLog().info("Bound to LocalPort=" + socket.getLocalPort() +
-                      ", LocalAddress=" +
-                      socket.getLocalAddress().getHostAddress());
+                ", LocalAddress=" +
+                socket.getLocalAddress().getHostAddress());
     }
 
     protected DatagramSocket createSocket() throws IOException {

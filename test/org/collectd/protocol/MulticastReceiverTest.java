@@ -18,13 +18,13 @@
 
 package org.collectd.protocol;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
 
 public class MulticastReceiverTest extends ReceiverTest {
 
@@ -34,7 +34,7 @@ public class MulticastReceiverTest extends ReceiverTest {
 
     @Override
     protected DatagramSocket createSocket() throws IOException {
-        MulticastSocket socket = new MulticastSocket(Network.DEFAULT_PORT+100);
+        MulticastSocket socket = new MulticastSocket(Network.DEFAULT_PORT + 100);
         String laddr = Network.DEFAULT_V4_ADDR;
         getReceiver().setListenAddress(laddr);
         socket.joinGroup(InetAddress.getByName(laddr));

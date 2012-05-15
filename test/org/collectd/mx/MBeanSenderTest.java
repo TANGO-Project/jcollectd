@@ -18,31 +18,29 @@
 
 package org.collectd.mx;
 
-import java.lang.management.ManagementFactory;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Logger;
-
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-
 import junit.framework.TestCase;
-
 import org.collectd.api.Notification;
 import org.collectd.api.ValueList;
 import org.collectd.protocol.Dispatcher;
 import org.collectd.protocol.ReceiverTest;
 import org.collectd.protocol.UdpReceiver;
 
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import java.lang.management.ManagementFactory;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Logger;
+
 public class MBeanSenderTest
-    extends TestCase
-    implements Dispatcher {
+        extends TestCase
+        implements Dispatcher {
 
     private static Logger _log =
-        Logger.getLogger(MBeanSenderTest.class.getName());
+            Logger.getLogger(MBeanSenderTest.class.getName());
     private MBeanServer _bs =
-        ManagementFactory.getPlatformMBeanServer();
+            ManagementFactory.getPlatformMBeanServer();
     private static final String PLUGIN = "MBeanSenderTest";
     private MBeanSender _sender;
     private ReceiverTest _receiverTest;
@@ -94,7 +92,7 @@ public class MBeanSenderTest
     }
 
     public void testDynamicMBean() throws Exception {
-        Map<String,Number> attrs = new HashMap<String,Number>();
+        Map<String, Number> attrs = new HashMap<String, Number>();
         int n = _numMyValues;
         attrs.put("Foo", new Long(1));
         attrs.put("Bar", new Long(2));

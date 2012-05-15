@@ -18,9 +18,9 @@
 
 package org.collectd.mx;
 
-import java.io.File;
-
 import junit.framework.TestCase;
+
+import java.io.File;
 
 public class MBeanConfigTest extends TestCase {
 
@@ -28,18 +28,18 @@ public class MBeanConfigTest extends TestCase {
     public void testJavaLang() throws Exception {
         MBeanConfig config = new MBeanConfig();
         MBeanCollector collector = config.add("javalang");
-        assertTrue(collector != null);
-        assertTrue(collector.getQueries().size() == 4);
+        assertNotNull(collector);
+        assertEquals(collector.getQueries().size(), 4);
     }
 
     public void testJavaLangOS() throws Exception {
         MBeanConfig config = new MBeanConfig();
         String name = "java.lang:type=OperatingSystem";
         MBeanCollector collector = config.add(name);
-        assertTrue(collector == null);
+        assertNull(collector);
         collector = new MBeanCollector();
         MBeanQuery query = collector.addMBean(name);
-        assertTrue(query != null);
+        assertNotNull(query);
     }
 
     public void testInvalid() throws Exception {
@@ -55,15 +55,14 @@ public class MBeanConfigTest extends TestCase {
     }
 
     public static void main(String[] args) throws Exception {
-        for (int i=0; i<args.length; i++) {
+        for (int i = 0; i < args.length; i++) {
             MBeanConfig config = new MBeanConfig();
             MBeanCollector collector = config.add(args[i]);
             if (collector == null) {
                 System.out.println(args[i] + "...NOT FOUND");
-            }
-            else {
+            } else {
                 System.out.println(args[i] + "..." +
-                                   collector.getQueries().size());
+                        collector.getQueries().size());
             }
         }
     }

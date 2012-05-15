@@ -18,18 +18,17 @@
 
 package org.collectd.protocol;
 
-import java.io.IOException;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import java.io.IOException;
+
 /**
  * Unit test for TypesDB.
  */
-public class TypesDBTest 
-    extends TestCase
-{
+public class TypesDBTest
+        extends TestCase {
     public TypesDBTest(String testName) {
         super(testName);
     }

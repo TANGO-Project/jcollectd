@@ -28,6 +28,6 @@ public class MulticastSenderTest extends SenderTest {
     }
 
     protected ReceiverTest createReceiverTest() {
-        return new MulticastReceiverTest();   
+        return new MulticastReceiverTest();
     }
 }
