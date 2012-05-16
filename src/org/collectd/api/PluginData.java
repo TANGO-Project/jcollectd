@@ -46,7 +46,9 @@ public class PluginData {
     }
 
     private String strip(String string) {
-        return string.replaceAll("[\\s\"]+", "_");
+        if(string != null)
+            string = string.replaceAll("[\\s\"]+", "_");
+        return string;
     }
 
     public long getTime() {
