@@ -24,15 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import javax.management.ListenerNotFoundException;
-import javax.management.MBeanNotificationInfo;
-import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
-import javax.management.NotificationBroadcaster;
-import javax.management.NotificationBroadcasterSupport;
-import javax.management.NotificationFilter;
-import javax.management.NotificationListener;
-import javax.management.ObjectName;
+import javax.management.*;
 
 import org.collectd.api.DataSource;
 import org.collectd.protocol.Network;
@@ -44,25 +36,29 @@ import org.collectd.api.ValueList;
 
 /**
  * Convert collectd value_list_t structures to JMX MBeans.
- * collectd notifications are broadcast as JMX notifications.  
+ * collectd notifications are broadcast as JMX notifications.
  */
 public class CollectdMBeanRegistry
-    implements Dispatcher, NotificationBroadcaster, CollectdMBeanRegistryMBean {
+        implements Dispatcher, NotificationBroadcaster, CollectdMBeanRegistryMBean {
 
     public static final String DOMAIN = "collectd";
 
-    private Map<ObjectName,Map<String,Number>> beans =
-        new HashMap<ObjectName,Map<String,Number>>();
+    private Map<ObjectName, Map<String, Number>> beans =
+            new HashMap<ObjectName, Map<String, Number>>();
     private NotificationBroadcasterSupport _broadcaster =
-        new NotificationBroadcasterSupport();
+            new NotificationBroadcasterSupport();
     private static Pattern _hosts = hostPattern();
 
     private long _notifSequence = 0;
     private boolean _doSummary =
-        !"false".equals(Network.getProperty("mx.summary"));
+            !"false".equals(Network.getProperty("mx.summary"));
+
+    private boolean _doPluginSummary =
+            !"false".equals(Network.getProperty("mx.pluginsummary"));
+
 
     MBeanServer bs =
-        ManagementFactory.getPlatformMBeanServer();
+            ManagementFactory.getPlatformMBeanServer();
 
     public void init() throws Exception {
         ObjectName name = new ObjectName(DOMAIN + ":" + "type=" + "MBeanRegistry");
@@ -90,10 +86,10 @@ public class CollectdMBeanRegistry
         }
         _broadcaster.sendNotification(new javax.management.
                 Notification(notif.getSeverityString(),
-                             notif.getSource(),
-                             ++_notifSequence,
-                             notif.getTime(),
-                             notif.getMessage()));
+                notif.getSource(),
+                ++_notifSequence,
+                notif.getTime(),
+                notif.getMessage()));
     }
 
     private String getRootName(String host, ValueList vl) {
@@ -109,19 +105,35 @@ public class CollectdMBeanRegistry
         return name.toString();
     }
 
-    Map<String,Number> getMBean(ObjectName name) {
+    private String getPluginRootName(String pname, ValueList vl) {
+        StringBuffer name = new StringBuffer();
+        name.append(DOMAIN).append(':');
+        name.append("host=").append(vl.getHost()).append(',');
+        name.append("plugin=").append(vl.getPlugin()).append(',');
+        name.append("name=");
+
+        if (pname != null) {
+            name.append(pname);
+        } else {
+            name.append("*");
+        }
+
+        return name.toString();
+    }
+
+    Map<String, Number> getMBean(ObjectName name) {
         return beans.get(name);
     }
 
     Number getMBeanAttribute(ObjectName name, String attribute) {
-        Map<String,Number> bean = getMBean(name);
+        Map<String, Number> bean = getMBean(name);
         if (bean == null) {
             return null;
         }
         return bean.get(attribute);
     }
 
-    private Map<String,Number> getMBean(ValueList vl) {
+    private Map<String, Number> getMBean(ValueList vl) {
         String instance = vl.getPluginInstance();
 
         StringBuffer bname = new StringBuffer();
@@ -147,26 +159,24 @@ public class CollectdMBeanRegistry
             throw new IllegalArgumentException(bname + ": " + e);
         }
 
-        Map<String,Number> metrics = getMBean(name);
+        Map<String, Number> metrics = getMBean(name);
         if (metrics != null) {
             return metrics;
         }
 
-        metrics = new HashMap<String,Number>();
+        metrics = new HashMap<String, Number>();
         beans.put(name, metrics);
 
         try {
             bs.registerMBean(new CollectdMBean(metrics), name);
 
             if (_doSummary) {
-                ObjectName sname =
-                    new ObjectName(getRootName("__summary__", vl));
-                if (!bs.isRegistered(sname)) {
-                    ObjectName query = new ObjectName(getRootName(null, vl));
-                    CollectdSummaryMBean summary =
-                        new CollectdSummaryMBean(query, metrics);
-                    summary.setMBeanRegistry(this);
-                    bs.registerMBean(summary, sname);
+                registerSummaryMBean(vl, metrics);
+            }
+
+            if (_doPluginSummary) {
+                if (instance != null && !instance.isEmpty()) {
+                    registerPluginSummaryMBean(vl, metrics);
                 }
             }
         } catch (Exception e) {
@@ -176,6 +186,30 @@ public class CollectdMBeanRegistry
         return metrics;
     }
 
+    private void registerSummaryMBean(ValueList vl, Map<String, Number> metrics) throws MalformedObjectNameException, MBeanRegistrationException, InstanceAlreadyExistsException, NotCompliantMBeanException {
+        ObjectName sname =
+                new ObjectName(getRootName(CollectdSummaryMBean.SUMMARY, vl));
+        if (!bs.isRegistered(sname)) {
+            ObjectName query = new ObjectName(getRootName(null, vl));
+            CollectdSummaryMBean summary =
+                    new CollectdSummaryMBean(query, metrics);
+            summary.setMBeanRegistry(this);
+            bs.registerMBean(summary, sname);
+        }
+    }
+
+    private void registerPluginSummaryMBean(ValueList vl, Map<String, Number> metrics) throws MalformedObjectNameException, MBeanRegistrationException, InstanceAlreadyExistsException, NotCompliantMBeanException {
+        ObjectName sname =
+                new ObjectName(getPluginRootName(CollectdSummaryMBean.SUMMARY, vl));
+        if (!bs.isRegistered(sname)) {
+            ObjectName query = new ObjectName(getPluginRootName(null, vl));
+            CollectdSummaryMBean summary =
+                    new CollectdSummaryMBean(query, metrics);
+            summary.setMBeanRegistry(this);
+            bs.registerMBean(summary, sname);
+        }
+    }
+
     public void dispatch(ValueList vl) {
         if (excludeHost(vl)) {
             return;
@@ -183,29 +217,27 @@ public class CollectdMBeanRegistry
         String type = vl.getType();
         List<Number> values = vl.getValues();
         int size = values.size();
-        Map<String,Number> metrics = getMBean(vl);
+        Map<String, Number> metrics = getMBean(vl);
         String key;
 
         if (size == 1) {
             String ti = vl.getTypeInstance();
             if (vl.defined(ti)) {
                 key = type + "." + ti;
-            }
-            else {
+            } else {
                 key = type;
             }
             metrics.put(key, values.get(0));
-        }
-        else {
+
+        } else {
             List<DataSource> ds = vl.getDataSource();
             if (ds == null) {
                 ds = TypesDB.getInstance().getType(vl.getType());
             }
-            for (int i=0; i<size; i++) {
+            for (int i = 0; i < size; i++) {
                 if (ds != null) {
                     key = type + "." + ds.get(i).getName();
-                }
-                else {
+                } else {
                     key = type + "." + "unknown" + i;
                 }
                 metrics.put(key, values.get(i));
@@ -220,15 +252,15 @@ public class CollectdMBeanRegistry
     }
 
     public MBeanNotificationInfo[] getNotificationInfo() {
-        return new MBeanNotificationInfo[] {
-            new MBeanNotificationInfo(Notification.SEVERITY,
-                                      javax.management.Notification.class.getName(),
-                                      "Collectd Notifications"),
+        return new MBeanNotificationInfo[]{
+                new MBeanNotificationInfo(Notification.SEVERITY,
+                        javax.management.Notification.class.getName(),
+                        "Collectd Notifications"),
         };
     }
 
     public void removeNotificationListener(NotificationListener listener)
-        throws ListenerNotFoundException {
+            throws ListenerNotFoundException {
         _broadcaster.removeNotificationListener(listener);
     }
 }

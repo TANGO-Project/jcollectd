@@ -76,6 +76,11 @@ The MBeanReceiver can be started using the following command:
 
         jcd.mx.summary=false
 
+* jcd.mx.pluginsummary - Enable summary MBean aggregator for each plugin (each means with multiple type instances), the default is true.
+  Example:
+
+        jcd.mx.pluginsummary=false
+
 * jcd.mx.hosts - Filter displayed hosts using a regex, the default is .*.
   Example:
 

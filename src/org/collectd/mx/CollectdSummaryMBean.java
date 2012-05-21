@@ -27,12 +27,13 @@ import javax.management.ObjectName;
 import javax.management.ReflectionException;
 
 /**
- * Aggregate metric values and return the average as the attribute values. 
+ * Aggregate metric values and return the average as the attribute values.
  */
 public class CollectdSummaryMBean extends CollectdMBean {
 
     private ObjectName _query;
     private CollectdMBeanRegistry _registry;
+    final static String SUMMARY = "__summary__";
 
     public CollectdSummaryMBean(ObjectName name,
                                 Map<String, Number> metrics) {
@@ -51,6 +52,9 @@ public class CollectdSummaryMBean extends CollectdMBean {
         Set<ObjectName> names = _registry.bs.queryNames(_query, null);
 
         for (ObjectName name : names) {
+            if (name.getKeyProperty("name").equals(SUMMARY)) {
+                continue;
+            }
             Number val = _registry.getMBeanAttribute(name, key);
             if (val == null) {
                 continue;
@@ -61,8 +65,7 @@ public class CollectdSummaryMBean extends CollectdMBean {
 
         if (num == 0) {
             avg = 0;
-        }
-        else {
+        } else {
             avg = sum / num;
         }
 
@@ -70,9 +73,9 @@ public class CollectdSummaryMBean extends CollectdMBean {
     }
 
     public Object getAttribute(String key)
-        throws AttributeNotFoundException,
-               MBeanException,
-               ReflectionException {
+            throws AttributeNotFoundException,
+            MBeanException,
+            ReflectionException {
 
         try {
             return getAverage(key);
