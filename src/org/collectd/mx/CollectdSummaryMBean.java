@@ -33,7 +33,7 @@ public class CollectdSummaryMBean extends CollectdMBean {
 
     private ObjectName _query;
     private CollectdMBeanRegistry _registry;
-    final static String SUMMARY = "__summary__";
+    final static String SUMMARY = "__avg__";
 
     public CollectdSummaryMBean(ObjectName name,
                                 Map<String, Number> metrics) {
@@ -52,7 +52,8 @@ public class CollectdSummaryMBean extends CollectdMBean {
         Set<ObjectName> names = _registry.bs.queryNames(_query, null);
 
         for (ObjectName name : names) {
-            if (name.getKeyProperty("name").equals(SUMMARY)) {
+            String pname = name.getKeyProperty("name");
+            if (pname != null && pname.equals(SUMMARY)) {
                 continue;
             }
             Number val = _registry.getMBeanAttribute(name, key);
