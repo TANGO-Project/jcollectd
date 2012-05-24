@@ -53,11 +53,8 @@ public class CollectdMBeanRegistry
     private static Pattern _hosts = hostPattern();
 
     private long _notifSequence = 0;
-    private boolean _doSummary =
-            !"false".equals(Network.getProperty("mx.summary"));
-
-    private boolean _doPluginSummary =
-            !"false".equals(Network.getProperty("mx.pluginsummary"));
+    private boolean _doSummary = "true".equals(Network.getProperty("mx.summary"));
+    private boolean _doPluginSummary = "true".equals(Network.getProperty("mx.pluginsummary"));
 
 
     MBeanServer bs =

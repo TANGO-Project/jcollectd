@@ -8,13 +8,16 @@
 
 
     <property name="classes" value="${build.dir}/classes"/>
+    <property name="classes.agent" value="${classes}/agent"/>
+    <property name="classes.server" value="${classes}/server"/>
+
     <property name="tests" value="${build.dir}/tests"/>
     <property name="jars.dir" value="${build.dir}/jar"/>
     <property name="dist.dir" value="${build.dir}/dist"/>
     <property name="testresults" location="${build.dir}/testresults"/>
 
     <path id="classpath">
-        <fileset dir="${lib.dir}" includes="**/*.jar"/>
+        <fileset dir="${lib.dir}" includes="**/*.jar"></fileset>
     </path>
 
     <property name="version" value="0.2.0-dev"/>
@@ -26,24 +29,55 @@
     <target name="clean">
         <delete dir="${build.dir}"/>
         <delete dir="${lib.dir}"/>
+        <mkdir dir="${build.dir}"/>
         <mkdir dir="${lib.dir}"/>
+        <mkdir dir="${classes}"/>
     </target>
 
-    <target name="compile">
-        <mkdir dir="${classes}"/>
-        <mkdir dir="${classes}/META-INF"/>
-        <copy todir="${classes}/META-INF">
+    <target name="compile-common" depends="clean">
+        <mkdir dir="${classes.agent}"/>
+        <mkdir dir="${classes.agent}/META-INF"/>
+        <copy todir="${classes.agent}/META-INF">
             <fileset dir="${src.dir}/META-INF"/>
         </copy>
-        <javac srcdir="${src.dir}" destdir="${classes}"
-               debug="${debug}" source="1.6" target="1.6"/>
+        <javac sourcepath="" srcdir="${src.dir}" destdir="${classes.agent}" debug="${debug}" source="1.6" target="1.6">
+            <include name="org/collectd/common/**"/>
+        </javac>
     </target>
+
+    <target name="compile-agent" depends="compile-common">
+        <mkdir dir="${classes.agent}"/>
+        <mkdir dir="${classes.agent}/META-INF"/>
+        <copy todir="${classes.agent}/META-INF">
+            <fileset dir="${src.dir}/META-INF"/>
+        </copy>
+        <javac sourcepath="" srcdir="${src.dir}" destdir="${classes.agent}" debug="${debug}" source="1.6" target="1.6" classpath="${classes.agent}">
+            <include name="org/collectd/agent/**"/>
+        </javac>
+    </target>
+
+    <target name="compile-server" depends="compile-agent">
+        <mkdir dir="${classes.server}"/>
+        <mkdir dir="${classes.server}/META-INF"/>
+        <copy todir="${classes.server}/META-INF">
+            <fileset dir="${src.dir}/META-INF"/>
+        </copy>
+        <javac sourcepath="" srcdir="${src.dir}" classpath="${classes.agent}" destdir="${classes.server}"
+               debug="${debug}" source="1.6" target="1.6">
+            <include name="org/collectd/server/**"/>
+        </javac>
+    </target>
+
+    <target name="compile" depends="compile-server"/>
 
     <target name="compile-tests" depends="compile">
         <ivy:retrieve conf="test" sync="true"/>
         <mkdir dir="${tests}"/>
-        <javac srcdir="${test.dir}" destdir="${tests}" classpathref="classpath" classpath="${classes}"
-               debug="${debug}" source="1.6" target="1.6"/>
+        <javac srcdir="${test.dir}" destdir="${tests}" classpathref="classpath"
+               debug="${debug}" source="1.6" target="1.6">
+            <classpath path="${classes.agent}"/>
+            <classpath path="${classes.server}"/>
+        </javac>
     </target>
 
     <target name="test" depends="compile-tests">
@@ -54,7 +88,8 @@
 
             <classpath>
                 <path refid="classpath"/>
-                <path location="${classes}"/>
+                <path location="${classes.agent}"/>
+                <path location="${classes.server}"/>
                 <path location="${tests}"/>
             </classpath>
 
@@ -68,10 +103,23 @@
         </junit>
     </target>
 
-    <target name="dist" depends="test">
+    <target name="dist-agent">
+        <jar jarfile="${build.dir}/jcollectd-agent-${version}.jar">
+            <fileset dir="${classes.agent}"
+                     excludes="**/*Test.class"/>
+            <manifest>
+                <attribute name="Premain-Class"
+                           value="org.collectd.agent.mx.RemoteMBeanSender"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="dist-server">
         <jar jarfile="${dist.jar}">
-            <fileset dir="${build.dir}/classes"
-                     excludes="**/*Test.class" />
+            <fileset dir="${classes.agent}"
+                     excludes="**/*Test.class"/>
+            <fileset dir="${classes.server}"
+                     excludes="**/*Test.class"/>
             <manifest>
                 <attribute name="Main-Class"
                            value="org.collectd.server.mx.MBeanReceiver"/>
@@ -80,5 +128,7 @@
             </manifest>
         </jar>
     </target>
+
+    <target name="dist" depends="test,dist-agent,dist-server"/>
 
 </project>

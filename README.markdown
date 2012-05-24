@@ -71,15 +71,15 @@ The MBeanReceiver can be started using the following command:
 
         jcd.typesdb=/opt/collectd/lib/types.db:./mytypes.db
 
-* jcd.mx.summary - Enable summary MBean aggregator, the default is true.
+* jcd.mx.summary - Enable summary MBean aggregator, the default is false.
   Example:
 
-        jcd.mx.summary=false
+        jcd.mx.summary=true
 
-* jcd.mx.pluginsummary - Enable summary MBean aggregator for each plugin (each means with multiple type instances), the default is true.
+* jcd.mx.pluginsummary - Enable summary MBean aggregator for each plugin (each means with multiple type instances), the default is false.
   Example:
 
-        jcd.mx.pluginsummary=false
+        jcd.mx.pluginsummary=true
 
 * jcd.mx.hosts - Filter displayed hosts using a regex, the default is .*.
   Example:
