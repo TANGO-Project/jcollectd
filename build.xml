@@ -20,7 +20,7 @@
         <fileset dir="${lib.dir}" includes="**/*.jar"></fileset>
     </path>
 
-    <property name="version" value="0.2.0-dev"/>
+    <property name="version" value="0.3.0-dev"/>
     <property name="dist.name" value="jcollectd-${version}"/>
     <property name="dist.jar" value="${build.dir}/${dist.name}.jar"/>
 
