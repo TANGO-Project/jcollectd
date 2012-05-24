@@ -74,9 +74,9 @@
                      excludes="**/*Test.class" />
             <manifest>
                 <attribute name="Main-Class"
-                           value="org.collectd.mx.MBeanReceiver"/>
+                           value="org.collectd.server.mx.MBeanReceiver"/>
                 <attribute name="Premain-Class"
-                           value="org.collectd.mx.RemoteMBeanSender"/>
+                           value="org.collectd.agent.mx.RemoteMBeanSender"/>
             </manifest>
         </jar>
     </target>
