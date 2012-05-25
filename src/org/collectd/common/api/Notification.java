@@ -94,8 +94,8 @@ public class Notification extends PluginData {
 
     public String toNagiosString() {
         //[<timestamp>] PROCESS_SERVICE_CHECK_RESULT;<host_name>;<svc_description>;<return_code>;<plugin_output>
-        StringBuilder sb = new StringBuilder('[')
-                .append(getTime()).append("] ")
+        StringBuilder sb = new StringBuilder()
+                .append('[').append(getTime()).append("] ")
                 .append("PROCESS_SERVICE_CHECK_RESULT;")
                 .append(getHost()).append(';')
                 .append(getPlugin()).append(';')
