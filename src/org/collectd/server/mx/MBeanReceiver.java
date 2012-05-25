@@ -18,23 +18,22 @@
 
 package org.collectd.server.mx;
 
+import org.collectd.common.protocol.Dispatcher;
+import org.collectd.server.protocol.UdpReceiver;
+
+import javax.management.MBeanServerFactory;
 import java.lang.management.ManagementFactory;
 import java.net.DatagramSocket;
 import java.net.MulticastSocket;
 
-import javax.management.MBeanServerFactory;
-
-import org.collectd.common.protocol.Dispatcher;
-import org.collectd.server.protocol.UdpReceiver;
-
 /**
  * Extend UdpReceiver, dispatching collectd data to a
  * CollectdMBeanRegistry instance.  Invoked via Main-Class:
- * java -jar collectd.jar 
+ * java -jar collectd.jar
  */
 public class MBeanReceiver
-    extends UdpReceiver
-    implements Runnable {
+        extends UdpReceiver
+        implements Runnable {
 
     private static final String MX = "com.sun.management.jmxremote";
     private static final String DMX = "-D" + MX;
@@ -50,19 +49,19 @@ public class MBeanReceiver
     private void setup() throws Exception {
         DatagramSocket socket = getSocket();
         if (socket instanceof MulticastSocket) {
-            MulticastSocket mcast = (MulticastSocket)socket;
+            MulticastSocket mcast = (MulticastSocket) socket;
             System.err.println("Multicast interface=" + mcast.getInterface());
         }
         System.err.println(getListenAddress() + ":" +
-                           getPort() +
-                           " listening...");
+                getPort() +
+                " listening...");
         listen();
     }
 
     public void run() {
         try {
             setup();
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -86,7 +85,7 @@ public class MBeanReceiver
         }
         boolean hasMx = false;
 
-        for (int i=0; i<args.length; i++) {
+        for (int i = 0; i < args.length; i++) {
             if (args[i].startsWith(DMX)) {
                 hasMx = true;
                 break;
@@ -99,7 +98,7 @@ public class MBeanReceiver
             System.err.print("Enabling " + DMX + "...");
             System.setProperty(MX, "true");
             //jdk 6 has a better way, but this works w/ 5 + 6
-            sun.management.Agent.startAgent();
+            //sun.management.Agent.startAgent();
             hasMx = hasMBeanServer();
             System.err.println(hasMx ? "ok" : "failed");
             return hasMx;
@@ -119,19 +118,18 @@ public class MBeanReceiver
         lt.start();
 
         boolean launchJconsole = false;
-        for (int i=0; i<args.length; i++) {
+        for (int i = 0; i < args.length; i++) {
             String arg = args[i];
             if (arg.equals("-jconsole")) {
                 launchJconsole = true;
-            }
-            else {
+            } else {
                 System.err.println("Unknown argument: " + arg);
                 return;
             }
         }
         if (launchJconsole) {
             String pid = getPid();
-            String[] argv = { "jconsole", pid };
+            String[] argv = {"jconsole", pid};
             System.err.println("exec(jconsole, " + pid + ")");
             try {
                 Process p = Runtime.getRuntime().exec(argv);
@@ -140,8 +138,7 @@ public class MBeanReceiver
             } catch (Exception e) {
                 System.err.println(e.getMessage());
             }
-        }
-        else {
+        } else {
             lt.join();
         }
     }

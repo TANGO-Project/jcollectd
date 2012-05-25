@@ -51,7 +51,8 @@
         <copy todir="${classes.agent}/META-INF">
             <fileset dir="${src.dir}/META-INF"/>
         </copy>
-        <javac sourcepath="" srcdir="${src.dir}" destdir="${classes.agent}" debug="${debug}" source="1.6" target="1.6" classpath="${classes.agent}">
+        <javac sourcepath="" srcdir="${src.dir}" destdir="${classes.agent}" debug="${debug}" source="1.6" target="1.6"
+               classpath="${classes.agent}">
             <include name="org/collectd/agent/**"/>
         </javac>
     </target>

@@ -19,7 +19,7 @@
 package org.collectd.server.mx;
 
 /**
- * Interface required to register CollectdMBeanRegistry as an MBean. 
+ * Interface required to register CollectdMBeanRegistry as an MBean.
  */
 public interface CollectdMBeanRegistryMBean {
 

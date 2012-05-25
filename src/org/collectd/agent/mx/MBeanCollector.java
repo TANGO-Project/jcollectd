@@ -18,6 +18,14 @@
 
 package org.collectd.agent.mx;
 
+import org.collectd.common.api.ValueList;
+import org.collectd.common.mx.MBeanAttribute;
+import org.collectd.common.mx.MBeanQuery;
+import org.collectd.common.protocol.Network;
+import org.collectd.common.protocol.TypesDB;
+
+import javax.management.*;
+import javax.management.openmbean.CompositeData;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,47 +33,35 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.management.Descriptor;
-import javax.management.MBeanAttributeInfo;
-import javax.management.MBeanInfo;
-import javax.management.MBeanServerConnection;
-import javax.management.ObjectName;
-import javax.management.openmbean.CompositeData;
-
-import org.collectd.common.api.ValueList;
-import org.collectd.common.mx.MBeanAttribute;
-import org.collectd.common.mx.MBeanQuery;
-import org.collectd.common.protocol.Network;
-import org.collectd.common.protocol.TypesDB;
-
 /**
  * Query MBeans and dispatch results upstream.
  */
 public class MBeanCollector implements Runnable {
 
     private static final Logger _log =
-        Logger.getLogger(MBeanCollector.class.getName());
+            Logger.getLogger(MBeanCollector.class.getName());
     private static boolean _useDescriptors =
-        "true".equals(Network.getProperty("mx.descriptors", "true"));
+            "true".equals(Network.getProperty("mx.descriptors", "true"));
     private static Method _getDescriptor;
     private static final String _metricTypeField =
-        Network.getProperty("mx.metricTypeField", "metricType");
+            Network.getProperty("mx.metricTypeField", "metricType");
     private MBeanSender _sender;
     private long _interval = 60;
-    private Map<String,MBeanQuery> _queries =
-        new HashMap<String,MBeanQuery>();
+    private Map<String, MBeanQuery> _queries =
+            new HashMap<String, MBeanQuery>();
 
     static {
         if (_useDescriptors) {
             try {
                 _getDescriptor = //1.6+
-                    MBeanAttributeInfo.class.getMethod("getDescriptor",
-                                                       (Class[])null);
+                        MBeanAttributeInfo.class.getMethod("getDescriptor",
+                                (Class[]) null);
             } catch (Exception e) {
                 _useDescriptors = false;
             }
         }
     }
+
     public MBeanSender getSender() {
         return _sender;
     }
@@ -82,7 +78,7 @@ public class MBeanCollector implements Runnable {
         _interval = interval;
     }
 
-    public Map<String,MBeanQuery> getQueries() {
+    public Map<String, MBeanQuery> getQueries() {
         return _queries;
     }
 
@@ -106,8 +102,7 @@ public class MBeanCollector implements Runnable {
             MBeanAttribute attr = new MBeanAttribute(attributeName);
             query.addAttribute(attr);
             return attr;
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -120,11 +115,10 @@ public class MBeanCollector implements Runnable {
     }
 
     private String getBeanName(ObjectName query, ObjectName name) {
-        Map<String,String> skip;
+        Map<String, String> skip;
         if (query == null) {
-            skip = new HashMap<String,String>();
-        }
-        else {
+            skip = new HashMap<String, String>();
+        } else {
             skip = query.getKeyPropertyList();
         }
         StringBuffer iname = new StringBuffer();
@@ -135,7 +129,7 @@ public class MBeanCollector implements Runnable {
             if (iname.length() > 0) {
                 iname.append(' ');
             }
-            iname.append(name.getKeyProperty((String)key));
+            iname.append(name.getKeyProperty((String) key));
         }
         return iname.toString();
     }
@@ -146,8 +140,7 @@ public class MBeanCollector implements Runnable {
                           Number val) {
         if (attr.getDataType() == Network.DS_TYPE_GAUGE) {
             val = new Double(val.doubleValue());
-        }
-        else {
+        } else {
             val = new Long(val.longValue());
         }
 
@@ -159,10 +152,9 @@ public class MBeanCollector implements Runnable {
         ValueList vl = new ValueList();
         vl.setInterval(getInterval());
         vl.setPlugin(plugin);
-        if (beanName == null){
+        if (beanName == null) {
             beanName = getBeanName(null, name);
-        }
-        else if (query.getName().isPattern()) {
+        } else if (query.getName().isPattern()) {
             String instName = getBeanName(query.getName(), name);
             if (instName != null) {
                 beanName += " " + instName;
@@ -182,10 +174,10 @@ public class MBeanCollector implements Runnable {
             plugin = name.getDomain();
         }
 
-        Map<String,MBeanAttributeInfo> attrInfo = null;
+        Map<String, MBeanAttributeInfo> attrInfo = null;
         if (_useDescriptors) {
             MBeanInfo info = conn.getMBeanInfo(name);
-            attrInfo = new HashMap<String,MBeanAttributeInfo>();
+            attrInfo = new HashMap<String, MBeanAttributeInfo>();
             for (MBeanAttributeInfo ainfo : info.getAttributes()) {
                 attrInfo.put(ainfo.getName(), ainfo);
             }
@@ -206,8 +198,8 @@ public class MBeanCollector implements Runnable {
                 //e.g. spring @ManagedMetric(metricType = MetricType.COUNTER)
                 try {
                     Descriptor descriptor =
-                        (Descriptor)_getDescriptor.invoke(attrInfo.get(attrName),
-                                                          (Object[])null);
+                            (Descriptor) _getDescriptor.invoke(attrInfo.get(attrName),
+                                    (Object[]) null);
                     Object type = descriptor.getFieldValue(_metricTypeField);
                     if (TypesDB.NAME_COUNTER.equals(type)) {
                         if (attr.getTypeName().equals(TypesDB.NAME_GAUGE)) {
@@ -220,7 +212,7 @@ public class MBeanCollector implements Runnable {
             }
 
             if (obj instanceof CompositeData) {
-                CompositeData data = (CompositeData)obj;
+                CompositeData data = (CompositeData) obj;
                 String key = attr.getCompositeKey();
                 if (key == null) {
                     //no key specified; collect all
@@ -231,12 +223,11 @@ public class MBeanCollector implements Runnable {
                             continue;
                         }
                         dispatch(query, plugin,
-                                 attrName + "." + ckey,
-                                 name, attr, (Number)obj);
+                                attrName + "." + ckey,
+                                name, attr, (Number) obj);
                     }
                     continue;
-                }
-                else {
+                } else {
                     obj = data.get(key);
                 }
             }
@@ -244,8 +235,8 @@ public class MBeanCollector implements Runnable {
                 continue;
             }
             dispatch(query, plugin,
-                     attr.getName(),
-                     name, attr, (Number)obj);
+                    attr.getName(),
+                    name, attr, (Number) obj);
         }
         _sender.flush();
     }
@@ -263,11 +254,11 @@ public class MBeanCollector implements Runnable {
     }
 
     private MBeanQuery queryAll(ObjectName name)
-        throws Exception {
+            throws Exception {
         MBeanQuery query = new MBeanQuery(name);
         MBeanInfo info = _sender.getMBeanServerConnection().getMBeanInfo(name);
         MBeanAttributeInfo[] attrs = info.getAttributes();
-        for (int i=0; i<attrs.length; i++) {
+        for (int i = 0; i < attrs.length; i++) {
             query.addAttribute(new MBeanAttribute(attrs[i].getName()));
         }
         return query;
@@ -279,8 +270,8 @@ public class MBeanCollector implements Runnable {
             if (name.isPattern()) {
                 Set<ObjectName> beans;
                 try {
-                    beans = 
-                        _sender.getMBeanServerConnection().queryNames(name, null);
+                    beans =
+                            _sender.getMBeanServerConnection().queryNames(name, null);
                 } catch (Exception e) {
                     _log.warning("queryNames(" + name + "): " + e);
                     return;
@@ -288,8 +279,7 @@ public class MBeanCollector implements Runnable {
                 for (ObjectName oname : beans) {
                     run(query, oname);
                 }
-            }
-            else {
+            } else {
                 run(query, name);
             }
         }

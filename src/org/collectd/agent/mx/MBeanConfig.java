@@ -18,15 +18,6 @@
 
 package org.collectd.agent.mx;
 
-import java.io.File;
-import java.io.InputStream;
-
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
-import org.collectd.agent.mx.MBeanCollector;
 import org.collectd.common.mx.MBeanAttribute;
 import org.collectd.common.mx.MBeanQuery;
 import org.collectd.common.protocol.TypesDB;
@@ -35,8 +26,15 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+import java.io.File;
+import java.io.InputStream;
+
 /**
- * Convert jcollectd.xml filters to MBeanCollect objects. 
+ * Convert jcollectd.xml filters to MBeanCollect objects.
  */
 public class MBeanConfig {
     private XPath _xpath = XPathFactory.newInstance().newXPath();
@@ -54,28 +52,26 @@ public class MBeanConfig {
     }
 
     private NodeList eval(String name, Node node)
-        throws XPathExpressionException {
-        return (NodeList)_xpath.evaluate(name, node, XPathConstants.NODESET);
+            throws XPathExpressionException {
+        return (NodeList) _xpath.evaluate(name, node, XPathConstants.NODESET);
     }
- 
+
     private NodeList eval(String name, InputSource is)
-        throws XPathExpressionException {
-        return (NodeList)_xpath.evaluate(name, is, XPathConstants.NODESET);
+            throws XPathExpressionException {
+        return (NodeList) _xpath.evaluate(name, is, XPathConstants.NODESET);
     }
 
     public MBeanCollector add(String source) throws Exception {
         String name = source + "-jcollectd.xml";
         if (new File(source).exists()) {
             return add(new InputSource(source));
-        }
-        else if (new File(name).exists()) {
+        } else if (new File(name).exists()) {
             return add(new InputSource(name));
-        }
-        else {
-            String[] rs = { name, "etc/" + name, "META-INF/" + name };
-            for (int i=0; i<rs.length; i++) {
+        } else {
+            String[] rs = {name, "etc/" + name, "META-INF/" + name};
+            for (int i = 0; i < rs.length; i++) {
                 InputStream is =
-                    getClass().getClassLoader().getResourceAsStream(rs[i]);
+                        getClass().getClassLoader().getResourceAsStream(rs[i]);
                 if (is != null) {
                     return add(is);
                 }
@@ -89,7 +85,7 @@ public class MBeanConfig {
     }
 
     public MBeanCollector add(InputSource is) throws Exception {
-        MBeanCollector collector = new MBeanCollector(); 
+        MBeanCollector collector = new MBeanCollector();
         final String path = "/jcollectd-config/mbeans";
         NodeList plugins = eval(path, is);
 
@@ -98,12 +94,12 @@ public class MBeanConfig {
             throw new IllegalArgumentException("Missing " + path);
         }
 
-        for (int i=0; i<len; i++) {
+        for (int i = 0; i < len; i++) {
             Node plugin = plugins.item(i);
             String pluginName = getAttribute(plugin, "name");
             NodeList mbeans = eval("mbean", plugin);
 
-            for (int j=0; j<mbeans.getLength(); j++) {
+            for (int j = 0; j < mbeans.getLength(); j++) {
                 Node mbean = mbeans.item(j);
                 String objectName = getAttribute(mbean, "name");
                 String objectNameAlias = getAttribute(mbean, "alias");
@@ -117,7 +113,7 @@ public class MBeanConfig {
                     query.setAlias(objectNameAlias);
                 }
 
-                for (int k=0; k<attrs.getLength(); k++) {
+                for (int k = 0; k < attrs.getLength(); k++) {
                     Node attr = attrs.item(k);
                     String attrName = getAttribute(attr, "name");
                     String type = getAttribute(attr, "type");
@@ -136,7 +132,7 @@ public class MBeanConfig {
                     query.addAttribute(mattr);
                 }
             }
-        }        
+        }
 
         return collector;
     }

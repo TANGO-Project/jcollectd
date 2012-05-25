@@ -46,7 +46,7 @@ public class PluginData {
     }
 
     private String strip(String string) {
-        if(string != null)
+        if (string != null)
             string = string.replaceAll("[\\s\"]+", "_");
         return string;
     }

@@ -18,15 +18,15 @@
 
 package org.collectd.server.protocol;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.collectd.common.api.DataSource;
-import org.collectd.common.api.ValueList;
 import org.collectd.common.api.Notification;
+import org.collectd.common.api.ValueList;
 import org.collectd.common.protocol.Dispatcher;
 import org.collectd.common.protocol.Network;
 import org.collectd.common.protocol.TypesDB;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Dispatch collectd data to stdout.
@@ -35,7 +35,7 @@ import org.collectd.common.protocol.TypesDB;
 public class StdoutDispatcher implements Dispatcher {
 
     private boolean namesOnly =
-        "true".equals(Network.getProperty("namesOnly"));
+            "true".equals(Network.getProperty("namesOnly"));
 
     public void dispatch(ValueList vl) {
         if (namesOnly) {
@@ -49,14 +49,13 @@ public class StdoutDispatcher implements Dispatcher {
             }
             if (ds != null) {
                 List<String> names = new ArrayList<String>();
-                for (int i=0; i<ds.size(); i++) {
+                for (int i = 0; i < ds.size(); i++) {
                     names.add(ds.get(i).getName());
                 }
                 System.out.print("-->" + names);
             }
             System.out.println();
-        }
-        else {
+        } else {
             System.out.println(vl);
         }
     }

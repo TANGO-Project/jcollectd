@@ -18,6 +18,10 @@
 
 package org.collectd.common.protocol;
 
+import org.collectd.common.api.DataSource;
+import org.collectd.common.api.PluginData;
+import org.collectd.common.api.ValueList;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -25,12 +29,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.List;
 
-import org.collectd.common.api.DataSource;
-import org.collectd.common.api.PluginData;
-import org.collectd.common.api.ValueList;
-
 /**
- * collectd/src/network.c:network_write 
+ * collectd/src/network.c:network_write
  */
 public class PacketWriter {
 
@@ -64,73 +64,69 @@ public class PacketWriter {
     }
 
     public void write(PluginData data)
-        throws IOException {
+            throws IOException {
 
         String type = data.getType();
 
         writeString(Network.TYPE_HOST, data.getHost());
-        writeNumber(Network.TYPE_TIME, data.getTime()/1000);
+        writeNumber(Network.TYPE_TIME, data.getTime() / 1000);
         writeString(Network.TYPE_PLUGIN, data.getPlugin());
         writeString(Network.TYPE_PLUGIN_INSTANCE, data.getPluginInstance());
         writeString(Network.TYPE_TYPE, type);
         writeString(Network.TYPE_TYPE_INSTANCE, data.getTypeInstance());
-        
+
         if (data instanceof ValueList) {
-            ValueList vl = (ValueList)data;
+            ValueList vl = (ValueList) data;
             List<DataSource> ds = _types.getType(type);
             List<Number> values = vl.getValues();
 
             if ((ds != null) && (ds.size() != values.size())) {
                 String msg =
-                    type + " datasource mismatch, expecting " +
-                    ds.size() + ", given " + values.size();
+                        type + " datasource mismatch, expecting " +
+                                ds.size() + ", given " + values.size();
                 throw new IOException(msg);
             }
 
             writeNumber(Network.TYPE_INTERVAL, vl.getInterval());
             writeValues(ds, values);
-        }
-        else {
+        } else {
             //XXX Notification
         }
     }
 
     private void writeHeader(int type, int len)
-        throws IOException {
+            throws IOException {
         _os.writeShort(type);
         _os.writeShort(len);
     }
 
     private void writeValues(List<DataSource> ds, List<Number> values)
-        throws IOException {
+            throws IOException {
 
         int num = values.size();
         int len =
-            Network.HEADER_LEN +
-            Network.UINT16_LEN +
-            (num * Network.UINT8_LEN) +
-            (num * Network.UINT64_LEN);
+                Network.HEADER_LEN +
+                        Network.UINT16_LEN +
+                        (num * Network.UINT8_LEN) +
+                        (num * Network.UINT64_LEN);
 
         byte[] types = new byte[num];
         int ds_len;
         if (ds == null) {
             ds_len = 0;
-        }
-        else {
+        } else {
             ds_len = ds.size();
         }
 
-        for (int i=0; i<num; i++) {
+        for (int i = 0; i < num; i++) {
             if (ds_len == 0) {
                 if (values.get(i) instanceof Double) {
                     types[i] = Network.DS_TYPE_GAUGE;
-                }
-                else {
+                } else {
                     types[i] = Network.DS_TYPE_COUNTER;
                 }
-            }
-            else {
-                types[i] = (byte)ds.get(i).getType();
+            } else {
+                types[i] = (byte) ds.get(i).getType();
             }
         }
 
@@ -138,19 +134,18 @@ public class PacketWriter {
         _os.writeShort(num);
         _os.write(types);
 
-        for (int i=0; i<num; i++) {
+        for (int i = 0; i < num; i++) {
             Number value = values.get(i);
             if (types[i] == Network.DS_TYPE_COUNTER) {
                 _os.writeLong(value.longValue());
-            }
-            else {
+            } else {
                 writeDouble(value.doubleValue());
             }
         }
     }
 
     private void writeDouble(double val)
-        throws IOException {
+            throws IOException {
 
         ByteBuffer bb = ByteBuffer.wrap(new byte[8]);
         //collectd uses x86 host order for doubles
@@ -160,7 +155,7 @@ public class PacketWriter {
     }
 
     private void writeString(int type, String val)
-        throws IOException {
+            throws IOException {
 
         if (val == null || val.length() == 0) {
             return;
@@ -172,7 +167,7 @@ public class PacketWriter {
     }
 
     private void writeNumber(int type, long val)
-        throws IOException {
+            throws IOException {
 
         int len = Network.HEADER_LEN + Network.UINT64_LEN;
         writeHeader(type, len);

@@ -18,19 +18,15 @@
 
 package org.collectd.agent.protocol;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetSocketAddress;
-import java.net.MulticastSocket;
-import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.collectd.common.api.PluginData;
 import org.collectd.common.protocol.Network;
 import org.collectd.common.protocol.PacketWriter;
 import org.collectd.common.protocol.Sender;
+
+import java.io.IOException;
+import java.net.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * collectd UDP protocol sender.
@@ -41,10 +37,10 @@ public class UdpSender extends Sender {
     private DatagramSocket _socket;
     private MulticastSocket _mcast;
     private PacketWriter _writer;
-    
+
     public UdpSender() {
         _servers = new ArrayList<InetSocketAddress>();
-        _writer = new PacketWriter();        
+        _writer = new PacketWriter();
     }
 
     public void addServer(String server) {
@@ -54,10 +50,9 @@ public class UdpSender extends Sender {
         if (ix == -1) {
             ip = server;
             port = Network.DEFAULT_PORT;
-        }
-        else {
+        } else {
             ip = server.substring(0, ix);
-            port = Integer.parseInt(server.substring(ix+1));
+            port = Integer.parseInt(server.substring(ix + 1));
         }
         addServer(new InetSocketAddress(ip, port));
     }
@@ -94,12 +89,11 @@ public class UdpSender extends Sender {
 
     private void send(byte[] buffer, int len) throws IOException {
         for (InetSocketAddress address : _servers) {
-            DatagramPacket packet = 
-                new DatagramPacket(buffer, len, address);
+            DatagramPacket packet =
+                    new DatagramPacket(buffer, len, address);
             if (address.getAddress().isMulticastAddress()) {
                 getMulticastSocket().send(packet);
-            }
-            else {
+            } else {
                 getSocket().send(packet);
             }
         }

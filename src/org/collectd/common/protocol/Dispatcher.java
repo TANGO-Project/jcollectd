@@ -18,12 +18,12 @@
 
 package org.collectd.common.protocol;
 
-import org.collectd.common.api.ValueList;
 import org.collectd.common.api.Notification;
+import org.collectd.common.api.ValueList;
 
 /**
  * Java interface equivalent of:
- * collectd/src/plugin.h:plugin_dispatch_values,plugin_dispatch_notification 
+ * collectd/src/plugin.h:plugin_dispatch_values,plugin_dispatch_notification
  */
 public interface Dispatcher {
     public void dispatch(ValueList values);

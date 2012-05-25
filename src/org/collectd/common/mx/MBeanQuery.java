@@ -18,25 +18,22 @@
 
 package org.collectd.common.mx;
 
-import org.collectd.common.mx.MBeanAttribute;
-
+import javax.management.ObjectName;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.management.ObjectName;
-
 /**
  * Container for MBeanAttribute objects and
- * collectd value_list_t structure metadata mapping.  
+ * collectd value_list_t structure metadata mapping.
  */
 public class MBeanQuery {
     private String _plugin;
     private String _pluginInstance;
-        
+
     private ObjectName _name;
     private String _alias;
     private Set<MBeanAttribute> _attributes =
-        new HashSet<MBeanAttribute>();
+            new HashSet<MBeanAttribute>();
 
     public MBeanQuery(ObjectName name) {
         _name = name;

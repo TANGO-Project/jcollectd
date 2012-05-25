@@ -24,23 +24,23 @@ package org.collectd.common.api;
 public class Notification extends PluginData {
     public static final int FAILURE = 1;
     public static final int WARNING = 2;
-    public static final int OKAY    = 4;
+    public static final int OKAY = 4;
 
     public static String[] SEVERITY = {
-        "FAILURE",
-        "WARNING",
-        "OKAY",
-        "UNKNOWN"
+            "FAILURE",
+            "WARNING",
+            "OKAY",
+            "UNKNOWN"
     };
 
     private int _severity;
     private String _message;
 
-    public Notification (PluginData pd) {
-        super (pd);
+    public Notification(PluginData pd) {
+        super(pd);
     }
 
-    public void setSeverity (int severity) {
+    public void setSeverity(int severity) {
         if ((severity == FAILURE)
                 || (severity == WARNING)
                 || (severity == OKAY))
@@ -64,7 +64,7 @@ public class Notification extends PluginData {
         }
     }
 
-    public void setMessage (String message) {
+    public void setMessage(String message) {
         this._message = message;
     }
 

@@ -21,80 +21,68 @@
 
 package org.collectd.common.api;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
-public class DataSet
-{
+public class DataSet {
     private String _type;
     private List<DataSource> _ds;
 
-    private DataSet ()
-    {
+    private DataSet() {
         this._type = null;
-        this._ds = new ArrayList<DataSource> ();
+        this._ds = new ArrayList<DataSource>();
     }
 
-    public DataSet (String type)
-    {
+    public DataSet(String type) {
         this._type = type;
-        this._ds = new ArrayList<DataSource> ();
+        this._ds = new ArrayList<DataSource>();
     }
 
-    public DataSet (String type, DataSource dsrc)
-    {
+    public DataSet(String type, DataSource dsrc) {
         this._type = type;
-        this._ds = new ArrayList<DataSource> ();
-        this._ds.add (dsrc);
+        this._ds = new ArrayList<DataSource>();
+        this._ds.add(dsrc);
     }
 
-    public DataSet (String type, List<DataSource> ds)
-    {
+    public DataSet(String type, List<DataSource> ds) {
         this._type = type;
         this._ds = ds;
     }
 
-    public void setType (String type)
-    {
+    public void setType(String type) {
         this._type = type;
     }
 
-    public String getType ()
-    {
+    public String getType() {
         return (this._type);
     }
 
-    public void addDataSource (DataSource dsrc)
-    {
-        this._ds.add (dsrc);
+    public void addDataSource(DataSource dsrc) {
+        this._ds.add(dsrc);
     }
 
-    public List<DataSource> getDataSources ()
-    {
+    public List<DataSource> getDataSources() {
         return (this._ds);
     }
 
-    public String toString ()
-    {
-        StringBuffer sb = new StringBuffer ();
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
         int i;
 
-        sb.append (this._type);
-        for (i = 0; i < this._ds.size (); i++)
-        {
+        sb.append(this._type);
+        for (i = 0; i < this._ds.size(); i++) {
             if (i == 0)
-                sb.append ("\t");
+                sb.append("\t");
             else
-                sb.append (", ");
-            sb.append (this._ds.get (i).toString ());
+                sb.append(", ");
+            sb.append(this._ds.get(i).toString());
         }
 
-        return (sb.toString ());
+        return (sb.toString());
     }
 
-    static public DataSet parseDataSet (String str)
-    {
-        DataSet ds = new DataSet ();
+    static public DataSet parseDataSet(String str) {
+        DataSet ds = new DataSet();
         String[] fields;
         int i;
 
@@ -106,7 +94,7 @@ public class DataSet
             return (null);
         }
 
-        fields = str.split ("\\s+");
+        fields = str.split("\\s+");
         if (fields.length < 2)
             return (null);
 
@@ -115,11 +103,11 @@ public class DataSet
         for (i = 1; i < fields.length; i++) {
             DataSource dsrc;
 
-            dsrc = DataSource.parseDataSource (fields[i]);
+            dsrc = DataSource.parseDataSource(fields[i]);
             if (dsrc == null)
                 break;
 
-            ds._ds.add (dsrc);
+            ds._ds.add(dsrc);
         }
 
         if (i < fields.length)

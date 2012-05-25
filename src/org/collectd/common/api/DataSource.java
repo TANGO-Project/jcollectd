@@ -19,24 +19,24 @@
 package org.collectd.common.api;
 
 /**
- * Java representation of collectd/src/plugin.h:data_source_t structure. 
+ * Java representation of collectd/src/plugin.h:data_source_t structure.
  */
 public class DataSource {
     public static final int TYPE_COUNTER = 0;
-    public static final int TYPE_GAUGE   = 1;
+    public static final int TYPE_GAUGE = 1;
 
     static final String COUNTER = "COUNTER";
     static final String GAUGE = "GAUGE";
 
     static final String NAN = "U";
-    private static final String[] TYPES = { COUNTER, GAUGE };
+    private static final String[] TYPES = {COUNTER, GAUGE};
 
     String _name;
     int _type;
     double _min;
     double _max;
 
-    public DataSource (String name, int type, double min, double max) {
+    public DataSource(String name, int type, double min, double max) {
         this._name = name;
         this._type = TYPE_GAUGE;
         if (type == TYPE_COUNTER)
@@ -47,7 +47,7 @@ public class DataSource {
 
     /* Needed in parseDataSource below. Other code should use the above
      * constructor or `parseDataSource'. */
-    private DataSource () {
+    private DataSource() {
         this._type = TYPE_GAUGE;
     }
 
@@ -86,8 +86,7 @@ public class DataSource {
     static double toDouble(String val) {
         if (val.equals(NAN)) {
             return Double.NaN;
-        }
-        else {
+        } else {
             return Double.parseDouble(val);
         }
     }
@@ -95,8 +94,7 @@ public class DataSource {
     private String asString(double val) {
         if (Double.isNaN(val)) {
             return NAN;
-        }
-        else {
+        } else {
             return String.valueOf(val);
         }
     }
@@ -111,15 +109,14 @@ public class DataSource {
         return sb.toString();
     }
 
-    static public DataSource parseDataSource (String str)
-    {
+    static public DataSource parseDataSource(String str) {
         String[] fields;
-        int str_len = str.length ();
-        DataSource dsrc = new DataSource ();
+        int str_len = str.length();
+        DataSource dsrc = new DataSource();
 
         /* Ignore trailing commas. This makes it easier for parsing code. */
-        if (str.charAt (str_len - 1) == ',') {
-            str = str.substring (0, str_len - 1);
+        if (str.charAt(str_len - 1) == ',') {
+            str = str.substring(0, str_len - 1);
         }
 
         fields = str.split(":");
@@ -128,15 +125,14 @@ public class DataSource {
 
         dsrc._name = fields[0];
 
-        if (fields[1].equals (DataSource.GAUGE)) {
-            dsrc._type  = TYPE_GAUGE;
-        }
-        else {
-            dsrc._type  = TYPE_COUNTER;
+        if (fields[1].equals(DataSource.GAUGE)) {
+            dsrc._type = TYPE_GAUGE;
+        } else {
+            dsrc._type = TYPE_COUNTER;
         }
 
-        dsrc._min =  toDouble (fields[2]);
-        dsrc._max =  toDouble (fields[3]);
+        dsrc._min = toDouble(fields[2]);
+        dsrc._max = toDouble(fields[3]);
 
         return (dsrc);
     } /* DataSource parseDataSource */

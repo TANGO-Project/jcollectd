@@ -20,38 +20,37 @@ package org.collectd.server.mx;
 
 import org.collectd.agent.mx.MBeanSender;
 
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
+import javax.management.remote.JMXServiceURL;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXServiceURL;
-
 /**
- * Out-of-process MBeanSender, polling a remote JMX MBeanServer. 
+ * Out-of-process MBeanSender, polling a remote JMX MBeanServer.
  */
 public class RemoteMBeanSender extends MBeanSender {
     private static final Logger _log =
-        Logger.getLogger(RemoteMBeanSender.class.getName());
+            Logger.getLogger(RemoteMBeanSender.class.getName());
 
     public void setMBeanServerConnection(JMXServiceURL url)
-        throws IOException {
+            throws IOException {
 
         JMXConnector connector =
-            JMXConnectorFactory.connect(url);
+                JMXConnectorFactory.connect(url);
         setMBeanServerConnection(connector.getMBeanServerConnection());
     }
 
     public void setMBeanServerConnection(String url)
-        throws IOException {
+            throws IOException {
 
         if (url.indexOf('/') == -1) {
             url =
-                "service:jmx:rmi:///jndi/rmi://" +
-                url +
-                "/jmxrmi";
+                    "service:jmx:rmi:///jndi/rmi://" +
+                            url +
+                            "/jmxrmi";
         }
 
         _log.fine("URL=" + url);

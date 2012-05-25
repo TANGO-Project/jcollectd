@@ -18,20 +18,20 @@
 
 package org.collectd.common.protocol;
 
+import org.collectd.common.api.Notification;
+import org.collectd.common.api.PluginData;
+import org.collectd.common.api.ValueList;
+
 import java.io.IOException;
 import java.net.InetAddress;
 
-import org.collectd.common.api.PluginData;
-import org.collectd.common.api.ValueList;
-import org.collectd.common.api.Notification;
-
 /**
- * Protocol independent Sender interface. 
+ * Protocol independent Sender interface.
  */
 public abstract class Sender implements Dispatcher {
 
     private String _host =
-        Network.getProperty("host", Network.getProperty("hostname"));
+            Network.getProperty("host", Network.getProperty("hostname"));
 
     public Sender() {
     }
@@ -46,10 +46,10 @@ public abstract class Sender implements Dispatcher {
         if (_host == null) {
             try {
                 _host =
-                    InetAddress.getLocalHost().getHostName();
+                        InetAddress.getLocalHost().getHostName();
             } catch (IOException e) {
                 _host = "unknown";
-            }       
+            }
         }
         return _host;
     }

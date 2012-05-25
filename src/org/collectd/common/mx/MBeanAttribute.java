@@ -18,11 +18,11 @@
 
 package org.collectd.common.mx;
 
-import java.util.List;
-
 import org.collectd.common.api.DataSource;
 import org.collectd.common.protocol.Network;
 import org.collectd.common.protocol.TypesDB;
+
+import java.util.List;
 
 /**
  * MBean attribute to collectd metric metadata mapper.
@@ -45,11 +45,10 @@ public class MBeanAttribute {
     }
 
     private static final int getDataType(String typeName) {
-        List<DataSource> ds = _types.getType(typeName); 
+        List<DataSource> ds = _types.getType(typeName);
         if ((ds == null) || (ds.size() == 0)) {
             return Network.DS_TYPE_GAUGE;
-        }
-        else {
+        } else {
             return ds.get(0).getType();
         }
     }
@@ -65,17 +64,15 @@ public class MBeanAttribute {
         if (_typeName == null) {
             if (dataType == Network.DS_TYPE_COUNTER) {
                 _typeName = TypesDB.NAME_COUNTER;
-            }
-            else {
+            } else {
                 _typeName = TypesDB.NAME_GAUGE;
             }
         }
         int ix = attributeName.indexOf('.');
         if (ix != -1) {
             _attributeName = attributeName.substring(0, ix);
-            _compositeKey  = attributeName.substring(ix+1);
-        }
-        else {
+            _compositeKey = attributeName.substring(ix + 1);
+        } else {
             _attributeName = attributeName;
         }
     }

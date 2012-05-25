@@ -18,21 +18,20 @@
 
 package org.collectd.server.mx;
 
+import org.collectd.common.api.DataSource;
+import org.collectd.common.api.Notification;
+import org.collectd.common.api.PluginData;
+import org.collectd.common.api.ValueList;
+import org.collectd.common.protocol.Dispatcher;
+import org.collectd.common.protocol.Network;
+import org.collectd.common.protocol.TypesDB;
+
+import javax.management.*;
 import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-
-import javax.management.*;
-
-import org.collectd.common.api.DataSource;
-import org.collectd.common.protocol.Network;
-import org.collectd.common.protocol.TypesDB;
-import org.collectd.common.api.Notification;
-import org.collectd.common.protocol.Dispatcher;
-import org.collectd.common.api.PluginData;
-import org.collectd.common.api.ValueList;
 
 /**
  * Convert collectd value_list_t structures to JMX MBeans.
@@ -100,8 +99,8 @@ public class CollectdMBeanRegistry
         }
         name.append("plugin=").append(vl.getPlugin());
         if (host == null) {
-                name.append(",*");
-            }
+            name.append(",*");
+        }
         return name.toString();
     }
 

@@ -18,35 +18,26 @@
 
 package org.collectd.server.mx;
 
+import javax.management.*;
 import java.util.Map;
-
-import javax.management.Attribute;
-import javax.management.AttributeList;
-import javax.management.AttributeNotFoundException;
-import javax.management.DynamicMBean;
-import javax.management.InvalidAttributeValueException;
-import javax.management.MBeanAttributeInfo;
-import javax.management.MBeanException;
-import javax.management.MBeanInfo;
-import javax.management.ReflectionException;
 
 /**
  * Wrap a Map&lt;String,Number&gt; as a DynamicMBean.
  */
 public class CollectdMBean implements DynamicMBean {
 
-    private Map<String,Number> _metrics;
+    private Map<String, Number> _metrics;
 
-    public CollectdMBean(Map<String,Number> metrics) {
+    public CollectdMBean(Map<String, Number> metrics) {
         _metrics = metrics;
     }
 
     public Object getAttribute(String key)
-        throws AttributeNotFoundException,
-               MBeanException, ReflectionException {
+            throws AttributeNotFoundException,
+            MBeanException, ReflectionException {
 
         Number val = _metrics.get(key);
-        if (val == null){
+        if (val == null) {
             throw new AttributeNotFoundException(key);
         }
         return val;
@@ -54,10 +45,10 @@ public class CollectdMBean implements DynamicMBean {
 
     public AttributeList getAttributes(String[] attrs) {
         AttributeList result = new AttributeList();
-        for (int i=0; i<attrs.length; i++) {
+        for (int i = 0; i < attrs.length; i++) {
             try {
                 result.add(new Attribute(attrs[i],
-                                         getAttribute(attrs[i])));
+                        getAttribute(attrs[i])));
             } catch (AttributeNotFoundException e) {
             } catch (MBeanException e) {
             } catch (ReflectionException e) {
@@ -71,46 +62,46 @@ public class CollectdMBean implements DynamicMBean {
     }
 
     protected String getAttributeDescription(String name) {
-        return name + " Attribute";   
+        return name + " Attribute";
     }
 
     protected MBeanAttributeInfo[] getAttributeInfo() {
         MBeanAttributeInfo[] attrs =
-            new MBeanAttributeInfo[_metrics.size()];
-        int i=0;
+                new MBeanAttributeInfo[_metrics.size()];
+        int i = 0;
         for (String name : _metrics.keySet()) {
             attrs[i++] =
-                new MBeanAttributeInfo(name,
-                                       getAttributeType(name),
-                                       getAttributeDescription(name),
-                                       true,   // isReadable
-                                       false,  // isWritable
-                                       false); // isIs
-        }        
+                    new MBeanAttributeInfo(name,
+                            getAttributeType(name),
+                            getAttributeDescription(name),
+                            true,   // isReadable
+                            false,  // isWritable
+                            false); // isIs
+        }
         return attrs;
     }
 
     public MBeanInfo getMBeanInfo() {
         MBeanInfo info =
-            new MBeanInfo(getClass().getName(),
-                          CollectdMBean.class.getName(),
-                          getAttributeInfo(),
-                          null, //constructors
-                          null, //operations
-                          null); //notifications
+                new MBeanInfo(getClass().getName(),
+                        CollectdMBean.class.getName(),
+                        getAttributeInfo(),
+                        null, //constructors
+                        null, //operations
+                        null); //notifications
         return info;
     }
 
     public Object invoke(String arg0, Object[] arg1, String[] arg2)
-        throws MBeanException, ReflectionException {
+            throws MBeanException, ReflectionException {
         // TODO Auto-generated method stub
         return null;
     }
 
     public void setAttribute(Attribute arg0)
-        throws AttributeNotFoundException,
-               InvalidAttributeValueException,
-               MBeanException, ReflectionException {
+            throws AttributeNotFoundException,
+            InvalidAttributeValueException,
+            MBeanException, ReflectionException {
         // TODO Auto-generated method stub
     }
 

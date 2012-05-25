@@ -32,7 +32,7 @@ public class ValueList extends PluginData {
     long _interval;
 
     public ValueList() {
-        
+
     }
 
     public ValueList(PluginData pd) {
@@ -40,7 +40,7 @@ public class ValueList extends PluginData {
     }
 
     public ValueList(ValueList vl) {
-        this((PluginData)vl);
+        this((PluginData) vl);
         _interval = vl._interval;
         _values.addAll(vl.getValues());
         _ds.addAll(vl._ds);
@@ -59,15 +59,14 @@ public class ValueList extends PluginData {
     }
 
     /* Used by the network parsing code */
-    public void clearValues () {
-        _values.clear ();
+    public void clearValues() {
+        _values.clear();
     }
 
     public List<DataSource> getDataSource() {
         if (_ds.size() > 0) {
             return _ds;
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -89,17 +88,16 @@ public class ValueList extends PluginData {
         sb.append("=[");
         List<DataSource> ds = getDataSource();
         int size = _values.size();
-        for (int i=0; i<size; i++) {
+        for (int i = 0; i < size; i++) {
             Number val = _values.get(i);
             String name;
             if (ds == null) {
                 name = "unknown" + i;
-            }
-            else {
+            } else {
                 name = ds.get(i).getName();
             }
             sb.append(name).append('=').append(val);
-            if (i < size-1) {
+            if (i < size - 1) {
                 sb.append(',');
             }
         }
