@@ -16,7 +16,9 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-package org.collectd.agent.mx;
+package org.collectd.server.mx;
+
+import org.collectd.agent.mx.MBeanSender;
 
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
