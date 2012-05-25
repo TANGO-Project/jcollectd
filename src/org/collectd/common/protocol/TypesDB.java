@@ -37,7 +37,7 @@ public class TypesDB {
     public static final String NAME_GAUGE = "gauge";
 
     //List<DataSource> == plugin.h:data_set_t
-    private Map<String, List<DataSource>> _types =
+    private final Map<String, List<DataSource>> _types =
             new HashMap<String, List<DataSource>>();
 
     private static TypesDB _instance;
@@ -63,7 +63,7 @@ public class TypesDB {
         return _instance;
     }
 
-    public void load(String files) throws IOException {
+    void load(String files) throws IOException {
         if (files == null) {
             return;
         }
@@ -87,7 +87,7 @@ public class TypesDB {
     }
 
     //collectd/src/types_list.h:read_types_list
-    public void load(File file) throws IOException {
+    void load(File file) throws IOException {
         InputStream is = new FileInputStream(file);
         try {
             load(is);
@@ -96,7 +96,7 @@ public class TypesDB {
         }
     }
 
-    public void load(InputStream is) throws IOException {
+    void load(InputStream is) throws IOException {
         BufferedReader reader =
                 new BufferedReader(new InputStreamReader(is));
 
@@ -120,8 +120,8 @@ public class TypesDB {
         if (args.length == 0) {
             tl.load();
         } else {
-            for (int i = 0; i < args.length; i++) {
-                tl.load(new File(args[i]));
+            for (String arg : args) {
+                tl.load(new File(arg));
             }
         }
         Map<String, List<DataSource>> types = tl.getTypes();

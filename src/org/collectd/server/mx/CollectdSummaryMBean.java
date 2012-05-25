@@ -30,7 +30,7 @@ import java.util.Set;
  */
 public class CollectdSummaryMBean extends CollectdMBean {
 
-    private ObjectName _query;
+    private final ObjectName _query;
     private CollectdMBeanRegistry _registry;
 
     public CollectdSummaryMBean(ObjectName name,
@@ -68,7 +68,7 @@ public class CollectdSummaryMBean extends CollectdMBean {
             avg = sum / num;
         }
 
-        return new Double(avg);
+        return avg;
     }
 
     public Object getAttribute(String key)

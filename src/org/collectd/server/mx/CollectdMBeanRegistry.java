@@ -40,23 +40,23 @@ import java.util.regex.Pattern;
 public class CollectdMBeanRegistry
         implements Dispatcher, NotificationBroadcaster, CollectdMBeanRegistryMBean {
 
-    public static final String DOMAIN = "collectd";
+    private static final String DOMAIN = "collectd";
     final static String STATUS = "__status__";
     final static String AVERAGE = "__avg__";
     final static String SUM = "__sum__";
 
-    private Map<ObjectName, Map<String, Number>> beans =
+    private final Map<ObjectName, Map<String, Number>> beans =
             new HashMap<ObjectName, Map<String, Number>>();
-    private NotificationBroadcasterSupport _broadcaster =
+    private final NotificationBroadcasterSupport _broadcaster =
             new NotificationBroadcasterSupport();
-    private static Pattern _hosts = hostPattern();
+    private static final Pattern _hosts = hostPattern();
 
     private long _notifSequence = 0;
-    private boolean _doSummary = "true".equals(Network.getProperty("mx.summary"));
-    private boolean _doPluginSummary = "true".equals(Network.getProperty("mx.pluginsummary"));
+    private final boolean _doSummary = "true".equals(Network.getProperty("mx.summary"));
+    private final boolean _doPluginSummary = "true".equals(Network.getProperty("mx.pluginsummary"));
 
 
-    MBeanServer bs =
+    final MBeanServer bs =
             ManagementFactory.getPlatformMBeanServer();
 
     public void init() throws Exception {
@@ -92,7 +92,7 @@ public class CollectdMBeanRegistry
     }
 
     private String getRootName(String host, ValueList vl) {
-        StringBuffer name = new StringBuffer();
+        StringBuilder name = new StringBuilder();
         name.append(DOMAIN).append(':');
         if (host != null) {
             name.append("host=").append(host).append(',');
@@ -105,7 +105,7 @@ public class CollectdMBeanRegistry
     }
 
     private String getPluginRootName(String pname, ValueList vl) {
-        StringBuffer name = new StringBuffer();
+        StringBuilder name = new StringBuilder();
         name.append(DOMAIN).append(':');
         name.append("host=").append(vl.getHost()).append(',');
         name.append("plugin=").append(vl.getPlugin()).append(',');
@@ -135,7 +135,7 @@ public class CollectdMBeanRegistry
     private Map<String, Number> getMBean(ValueList vl) {
         String instance = vl.getPluginInstance();
 
-        StringBuffer bname = new StringBuffer();
+        StringBuilder bname = new StringBuilder();
         bname.append(getRootName(vl.getHost(), vl));
         if (!vl.defined(instance)) {
             List<DataSource> ds = vl.getDataSource();
@@ -189,11 +189,7 @@ public class CollectdMBeanRegistry
         ObjectName sname =
                 new ObjectName(getRootName(AVERAGE, vl));
         if (!bs.isRegistered(sname)) {
-            ObjectName query = new ObjectName(getRootName(null, vl));
-            CollectdSummaryMBean summary =
-                    new CollectdSummaryMBean(query, metrics);
-            summary.setMBeanRegistry(this);
-            bs.registerMBean(summary, sname);
+            registerMbean(metrics, sname, new ObjectName(getRootName(null, vl)));
         }
     }
 
@@ -201,14 +197,17 @@ public class CollectdMBeanRegistry
         ObjectName sname =
                 new ObjectName(getPluginRootName(AVERAGE, vl));
         if (!bs.isRegistered(sname)) {
-            ObjectName query = new ObjectName(getPluginRootName(null, vl));
-            CollectdSummaryMBean summary =
-                    new CollectdSummaryMBean(query, metrics);
-            summary.setMBeanRegistry(this);
-            bs.registerMBean(summary, sname);
-            return summary;
+            return registerMbean(metrics, sname, new ObjectName(getPluginRootName(null, vl)));
         }
         return null;
+    }
+
+    private CollectdSummaryMBean registerMbean(Map<String, Number> metrics, ObjectName sname, ObjectName query) throws InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException {
+        CollectdSummaryMBean summary =
+                new CollectdSummaryMBean(query, metrics);
+        summary.setMBeanRegistry(this);
+        bs.registerMBean(summary, sname);
+        return summary;
     }
 
     public void dispatch(ValueList vl) {

@@ -47,7 +47,7 @@ public class MBeanCollector implements Runnable {
             Network.getProperty("mx.metricTypeField", "metricType");
     private MBeanSender _sender;
     private long _interval = 60;
-    private Map<String, MBeanQuery> _queries =
+    private final Map<String, MBeanQuery> _queries =
             new HashMap<String, MBeanQuery>();
 
     static {
@@ -121,7 +121,7 @@ public class MBeanCollector implements Runnable {
         } else {
             skip = query.getKeyPropertyList();
         }
-        StringBuffer iname = new StringBuffer();
+        StringBuilder iname = new StringBuilder();
         for (Object key : name.getKeyPropertyList().keySet()) {
             if (skip.get(key) != null) {
                 continue;
@@ -139,9 +139,9 @@ public class MBeanCollector implements Runnable {
                           ObjectName name, MBeanAttribute attr,
                           Number val) {
         if (attr.getDataType() == Network.DS_TYPE_GAUGE) {
-            val = new Double(val.doubleValue());
+            val = val.doubleValue();
         } else {
-            val = new Long(val.longValue());
+            val = val.longValue();
         }
 
         String pluginInstance = query.getPluginInstance();
@@ -167,7 +167,7 @@ public class MBeanCollector implements Runnable {
         _sender.dispatch(vl);
     }
 
-    public void collect(MBeanQuery query, ObjectName name) throws Exception {
+    void collect(MBeanQuery query, ObjectName name) throws Exception {
         MBeanServerConnection conn = _sender.getMBeanServerConnection();
         String plugin = query.getPlugin();
         if (plugin == null) {
@@ -258,8 +258,8 @@ public class MBeanCollector implements Runnable {
         MBeanQuery query = new MBeanQuery(name);
         MBeanInfo info = _sender.getMBeanServerConnection().getMBeanInfo(name);
         MBeanAttributeInfo[] attrs = info.getAttributes();
-        for (int i = 0; i < attrs.length; i++) {
-            query.addAttribute(new MBeanAttribute(attrs[i].getName()));
+        for (MBeanAttributeInfo attr : attrs) {
+            query.addAttribute(new MBeanAttribute(attr.getName()));
         }
         return query;
     }

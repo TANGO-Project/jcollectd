@@ -26,7 +26,7 @@ import java.util.List;
 
 public class DataSet {
     private String _type;
-    private List<DataSource> _ds;
+    private final List<DataSource> _ds;
 
     private DataSet() {
         this._type = null;
@@ -66,7 +66,7 @@ public class DataSet {
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         int i;
 
         sb.append(this._type);

@@ -25,18 +25,18 @@ import java.util.Date;
  */
 public class PluginData {
 
-    protected long _time;
-    protected String _host;
-    protected String _plugin;
-    protected String _pluginInstance = "";
-    protected String _type = "";
-    protected String _typeInstance = "";
+    private long _time;
+    private String _host;
+    private String _plugin;
+    private String _pluginInstance = "";
+    private String _type = "";
+    private String _typeInstance = "";
 
     public PluginData() {
 
     }
 
-    public PluginData(PluginData pd) {
+    PluginData(PluginData pd) {
         _time = pd._time;
         _host = pd._host;
         _plugin = strip(pd._plugin);
@@ -104,28 +104,26 @@ public class PluginData {
     }
 
     public String getSource() {
-        final char DLM = '/';
         StringBuffer sb = new StringBuffer();
-        if (defined(_host)) {
-            sb.append(_host);
-        }
-        if (defined(_plugin)) {
-            sb.append(DLM).append(_plugin);
-        }
-        if (defined(_pluginInstance)) {
-            sb.append(DLM).append(_pluginInstance);
-        }
-        if (defined(_type)) {
-            sb.append(DLM).append(_type);
-        }
-        if (defined(_typeInstance)) {
-            sb.append(DLM).append(_typeInstance);
-        }
+        appendToSource(sb, _host);
+        appendToSource(sb, _plugin);
+        appendToSource(sb, _pluginInstance);
+        appendToSource(sb, _type);
+        appendToSource(sb, _typeInstance);
         return sb.toString();
     }
 
+    private void appendToSource(StringBuffer sb, String value) {
+        if (defined(value)) {
+            if(sb.length() != 0){
+                sb.append('/');
+            }
+            sb.append(value);
+        }
+    }
+
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append('[').append(new Date(_time)).append("] ");
         sb.append(getSource());
         return sb.toString();

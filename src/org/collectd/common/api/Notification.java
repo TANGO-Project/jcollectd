@@ -22,11 +22,11 @@ package org.collectd.common.api;
  * Java representation of collectd/src/plugin.h:notfication_t structure.
  */
 public class Notification extends PluginData {
-    public static final int FAILURE = 1;
-    public static final int WARNING = 2;
-    public static final int OKAY = 4;
+    private static final int FAILURE = 1;
+    private static final int WARNING = 2;
+    private static final int OKAY = 4;
 
-    public static String[] SEVERITY = {
+    public static final String[] SEVERITY = {
             "FAILURE",
             "WARNING",
             "OKAY",
@@ -73,7 +73,7 @@ public class Notification extends PluginData {
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer(super.toString());
+        StringBuilder sb = new StringBuilder(super.toString());
         sb.append(" [").append(getSeverityString()).append("] ");
         sb.append(_message);
         return sb.toString();

@@ -33,10 +33,10 @@ public class ValueListTest extends TestCase {
 
     private static final String HOST = "localhost";
     private static final String PLUGIN = "collectd";
-    private double values[] = {
+    private final double[] values = {
             1.0, 0.2, 30.0
     };
-    private long interval = 10;
+    private final long interval = 10;
     private static final long now = 1226466789000L;
 
     public ValueListTest(String testName) {
@@ -54,8 +54,8 @@ public class ValueListTest extends TestCase {
         vl.setTime(now);
         vl.setPlugin(PLUGIN);
         vl.setPluginInstance(ValueListTest.class.getName());
-        for (int i = 0; i < values.length; i++) {
-            vl.addValue(new Double(values[i]));
+        for (double value : values) {
+            vl.addValue(value);
         }
         return vl;
     }

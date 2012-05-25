@@ -22,19 +22,19 @@ package org.collectd.common.api;
  * Java representation of collectd/src/plugin.h:data_source_t structure.
  */
 public class DataSource {
-    public static final int TYPE_COUNTER = 0;
-    public static final int TYPE_GAUGE = 1;
+    private static final int TYPE_COUNTER = 0;
+    private static final int TYPE_GAUGE = 1;
 
-    static final String COUNTER = "COUNTER";
-    static final String GAUGE = "GAUGE";
+    private static final String COUNTER = "COUNTER";
+    private static final String GAUGE = "GAUGE";
 
-    static final String NAN = "U";
+    private static final String NAN = "U";
     private static final String[] TYPES = {COUNTER, GAUGE};
 
-    String _name;
-    int _type;
-    double _min;
-    double _max;
+    private String _name;
+    private int _type;
+    private double _min;
+    private double _max;
 
     public DataSource(String name, int type, double min, double max) {
         this._name = name;
@@ -83,7 +83,7 @@ public class DataSource {
         _max = max;
     }
 
-    static double toDouble(String val) {
+    private static double toDouble(String val) {
         if (val.equals(NAN)) {
             return Double.NaN;
         } else {
@@ -100,7 +100,7 @@ public class DataSource {
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         final char DLM = ':';
         sb.append(_name).append(DLM);
         sb.append(TYPES[_type]).append(DLM);

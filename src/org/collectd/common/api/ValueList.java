@@ -26,10 +26,10 @@ import java.util.List;
  */
 public class ValueList extends PluginData {
 
-    List<Number> _values = new ArrayList<Number>();
-    List<DataSource> _ds = new ArrayList<DataSource>();
+    private List<Number> _values = new ArrayList<Number>();
+    private List<DataSource> _ds = new ArrayList<DataSource>();
 
-    long _interval;
+    private long _interval;
 
     public ValueList() {
 
@@ -84,7 +84,7 @@ public class ValueList extends PluginData {
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer(super.toString());
+        StringBuilder sb = new StringBuilder(super.toString());
         sb.append("=[");
         List<DataSource> ds = getDataSource();
         int size = _values.size();

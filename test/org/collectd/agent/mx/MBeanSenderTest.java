@@ -38,9 +38,9 @@ public class MBeanSenderTest
         extends TestCase
         implements Dispatcher {
 
-    private static Logger _log =
+    private static final Logger _log =
             Logger.getLogger(MBeanSenderTest.class.getName());
-    private MBeanServer _bs =
+    private final MBeanServer _bs =
             ManagementFactory.getPlatformMBeanServer();
     private static final String PLUGIN = "MBeanSenderTest";
     private MBeanSender _sender;
@@ -95,8 +95,8 @@ public class MBeanSenderTest
     public void testDynamicMBean() throws Exception {
         Map<String, Number> attrs = new HashMap<String, Number>();
         int n = _numMyValues;
-        attrs.put("Foo", new Long(1));
-        attrs.put("Bar", new Long(2));
+        attrs.put("Foo", (long) 1);
+        attrs.put("Bar", (long) 2);
         CollectdMBean mbean = new CollectdMBean(attrs);
         ObjectName name = new ObjectName(PLUGIN + ":type=dynamic");
         ManagementFactory.getPlatformMBeanServer().registerMBean(mbean, name);

@@ -33,7 +33,7 @@ public abstract class Sender implements Dispatcher {
     private String _host =
             Network.getProperty("host", Network.getProperty("hostname"));
 
-    public Sender() {
+    protected Sender() {
     }
 
     protected abstract void write(PluginData data) throws IOException;
@@ -42,7 +42,7 @@ public abstract class Sender implements Dispatcher {
 
     public abstract void addServer(String server);
 
-    public String getHost() {
+    String getHost() {
         if (_host == null) {
             try {
                 _host =

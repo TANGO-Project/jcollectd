@@ -57,13 +57,13 @@ public class MBeanConfigTest extends TestCase {
     }
 
     public static void main(String[] args) throws Exception {
-        for (int i = 0; i < args.length; i++) {
+        for (String arg : args) {
             MBeanConfig config = new MBeanConfig();
-            MBeanCollector collector = config.add(args[i]);
+            MBeanCollector collector = config.add(arg);
             if (collector == null) {
-                System.out.println(args[i] + "...NOT FOUND");
+                System.out.println(arg + "...NOT FOUND");
             } else {
-                System.out.println(args[i] + "..." +
+                System.out.println(arg + "..." +
                         collector.getQueries().size());
             }
         }

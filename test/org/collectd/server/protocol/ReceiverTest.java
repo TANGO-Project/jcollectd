@@ -36,7 +36,7 @@ public class ReceiverTest extends TestCase {
         return new TestSuite(ReceiverTest.class);
     }
 
-    protected Logger getLog() {
+    Logger getLog() {
         return Logger.getLogger(getClass().getName());
     }
 
@@ -66,7 +66,7 @@ public class ReceiverTest extends TestCase {
                 socket.getLocalAddress().getHostAddress());
     }
 
-    protected DatagramSocket createSocket() throws IOException {
+    DatagramSocket createSocket() throws IOException {
         DatagramSocket socket = new DatagramSocket();
         _receiver.setListenAddress("127.0.0.1");
         return socket;

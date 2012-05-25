@@ -33,10 +33,10 @@ import java.util.List;
  * See collectd/src/network.c:network_write
  */
 public class UdpSender extends Sender {
-    private List<InetSocketAddress> _servers;
+    private final List<InetSocketAddress> _servers;
     private DatagramSocket _socket;
     private MulticastSocket _mcast;
-    private PacketWriter _writer;
+    private final PacketWriter _writer;
 
     public UdpSender() {
         _servers = new ArrayList<InetSocketAddress>();
@@ -57,7 +57,7 @@ public class UdpSender extends Sender {
         addServer(new InetSocketAddress(ip, port));
     }
 
-    public void addServer(InetSocketAddress server) {
+    void addServer(InetSocketAddress server) {
         _servers.add(server);
     }
 

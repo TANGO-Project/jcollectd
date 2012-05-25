@@ -37,7 +37,7 @@ import java.io.InputStream;
  * Convert jcollectd.xml filters to MBeanCollect objects.
  */
 public class MBeanConfig {
-    private XPath _xpath = XPathFactory.newInstance().newXPath();
+    private final XPath _xpath = XPathFactory.newInstance().newXPath();
 
     private String getAttribute(Node node, String name) {
         NamedNodeMap attrs = node.getAttributes();
@@ -69,9 +69,9 @@ public class MBeanConfig {
             return add(new InputSource(name));
         } else {
             String[] rs = {name, "etc/" + name, "META-INF/" + name};
-            for (int i = 0; i < rs.length; i++) {
+            for (String r : rs) {
                 InputStream is =
-                        getClass().getClassLoader().getResourceAsStream(rs[i]);
+                        getClass().getClassLoader().getResourceAsStream(r);
                 if (is != null) {
                     return add(is);
                 }
@@ -80,11 +80,11 @@ public class MBeanConfig {
         }
     }
 
-    public MBeanCollector add(InputStream is) throws Exception {
+    MBeanCollector add(InputStream is) throws Exception {
         return add(new InputSource(is));
     }
 
-    public MBeanCollector add(InputSource is) throws Exception {
+    MBeanCollector add(InputSource is) throws Exception {
         MBeanCollector collector = new MBeanCollector();
         final String path = "/jcollectd-config/mbeans";
         NodeList plugins = eval(path, is);

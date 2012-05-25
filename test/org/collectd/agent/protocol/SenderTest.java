@@ -36,23 +36,23 @@ public class SenderTest
         extends TestCase
         implements Dispatcher {
 
-    private static long INTERVAL = 10;
-    private static String PLUGIN = "junit";
-    private static String PLUGIN_INSTANCE = "SenderTest";
+    private static final long INTERVAL = 10;
+    private static final String PLUGIN = "junit";
+    private static final String PLUGIN_INSTANCE = "SenderTest";
     private static final String TYPE = "test";
 
-    private double dvals[] = {1.0, 66.77, Double.MAX_VALUE};
-    private long lvals[] = {1, 66, Long.MAX_VALUE, 4};
+    private final double[] dvals = {1.0, 66.77, Double.MAX_VALUE};
+    private final long[] lvals = {1, 66, Long.MAX_VALUE, 4};
 
-    private List<ValueList> _values = new ArrayList<ValueList>();
-    protected Sender _sender;
+    private final List<ValueList> _values = new ArrayList<ValueList>();
+    private Sender _sender;
     private ReceiverTest _receiverTest;
 
     public static Test suite() {
         return new TestSuite(SenderTest.class);
     }
 
-    protected Logger getLog() {
+    Logger getLog() {
         return Logger.getLogger(getClass().getName());
     }
 
@@ -114,7 +114,7 @@ public class SenderTest
     public void testGauge() throws Exception {
         ValueList vl = newValueList();
         for (double val : dvals) {
-            vl.addValue(new Double(val));
+            vl.addValue(val);
         }
         _sender.dispatch(vl);
         String host = vl.getHost();
@@ -135,7 +135,7 @@ public class SenderTest
     public void testCounter() throws Exception {
         ValueList vl = newValueList();
         for (long val : lvals) {
-            vl.addValue(new Long(val));
+            vl.addValue(val);
         }
         _sender.dispatch(vl);
         String host = vl.getHost();

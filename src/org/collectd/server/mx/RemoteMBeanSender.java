@@ -35,7 +35,7 @@ public class RemoteMBeanSender extends MBeanSender {
     private static final Logger _log =
             Logger.getLogger(RemoteMBeanSender.class.getName());
 
-    public void setMBeanServerConnection(JMXServiceURL url)
+    void setMBeanServerConnection(JMXServiceURL url)
             throws IOException {
 
         JMXConnector connector =
@@ -43,7 +43,7 @@ public class RemoteMBeanSender extends MBeanSender {
         setMBeanServerConnection(connector.getMBeanServerConnection());
     }
 
-    public void setMBeanServerConnection(String url)
+    void setMBeanServerConnection(String url)
             throws IOException {
 
         if (url.indexOf('/') == -1) {

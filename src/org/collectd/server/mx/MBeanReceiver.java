@@ -42,10 +42,6 @@ public class MBeanReceiver
         setDispatcher(new CollectdMBeanRegistry());
     }
 
-    public MBeanReceiver(Dispatcher dispatcher) {
-        super(dispatcher);
-    }
-
     private void setup() throws Exception {
         DatagramSocket socket = getSocket();
         if (socket instanceof MulticastSocket) {
@@ -85,8 +81,8 @@ public class MBeanReceiver
         }
         boolean hasMx = false;
 
-        for (int i = 0; i < args.length; i++) {
-            if (args[i].startsWith(DMX)) {
+        for (String arg : args) {
+            if (arg.startsWith(DMX)) {
                 hasMx = true;
                 break;
             }
@@ -118,8 +114,7 @@ public class MBeanReceiver
         lt.start();
 
         boolean launchJconsole = false;
-        for (int i = 0; i < args.length; i++) {
-            String arg = args[i];
+        for (String arg : args) {
             if (arg.equals("-jconsole")) {
                 launchJconsole = true;
             } else {

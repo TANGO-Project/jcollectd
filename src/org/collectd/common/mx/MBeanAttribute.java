@@ -40,11 +40,11 @@ public class MBeanAttribute {
         this(attributeName, Network.DS_TYPE_GAUGE);
     }
 
-    public MBeanAttribute(String attributeName, int dataType) {
+    private MBeanAttribute(String attributeName, int dataType) {
         this(attributeName, dataType, null);
     }
 
-    private static final int getDataType(String typeName) {
+    private static int getDataType(String typeName) {
         List<DataSource> ds = _types.getType(typeName);
         if ((ds == null) || (ds.size() == 0)) {
             return Network.DS_TYPE_GAUGE;
@@ -57,7 +57,7 @@ public class MBeanAttribute {
         this(attributeName, getDataType(typeName), typeName);
     }
 
-    public MBeanAttribute(String attributeName, int dataType, String typeName) {
+    private MBeanAttribute(String attributeName, int dataType, String typeName) {
         _name = attributeName;
         _dataType = dataType;
         _typeName = typeName;

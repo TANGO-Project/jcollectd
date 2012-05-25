@@ -34,15 +34,15 @@ import java.util.List;
  */
 public class PacketWriter {
 
-    private ByteArrayOutputStream _bos;
-    private DataOutputStream _os;
+    private final ByteArrayOutputStream _bos;
+    private final DataOutputStream _os;
     private final TypesDB _types = TypesDB.getInstance();
 
     public PacketWriter() {
         this(new ByteArrayOutputStream(Network.BUFFER_SIZE));
     }
 
-    public PacketWriter(ByteArrayOutputStream bos) {
+    private PacketWriter(ByteArrayOutputStream bos) {
         _bos = bos;
         _os = new DataOutputStream(_bos);
     }

@@ -55,7 +55,7 @@ public class MBeanSender implements Dispatcher {
     private MBeanServerConnection _bs =
         ManagementFactory.getPlatformMBeanServer();
 
-    private ScheduledExecutorService _scheduler =
+    private final ScheduledExecutorService _scheduler =
         Executors.newScheduledThreadPool(1, new ThreadFactory() {
             public Thread newThread(Runnable task) {
                 Thread thread = new Thread(task);
@@ -65,14 +65,14 @@ public class MBeanSender implements Dispatcher {
             }
         });
 
-    private Map<String,Sender> _senders =
+    private final Map<String,Sender> _senders =
         new HashMap<String,Sender>();
 
-    private MBeanConfig _config = new MBeanConfig();
+    private final MBeanConfig _config = new MBeanConfig();
 
     private String _instanceName;
 
-    public void setMBeanServerConnection(MBeanServerConnection server) {
+    protected void setMBeanServerConnection(MBeanServerConnection server) {
         _bs = server;
     }
 
@@ -107,7 +107,7 @@ public class MBeanSender implements Dispatcher {
                                        TimeUnit.SECONDS);
     }
 
-    public void addSender(String protocol, Sender sender) {
+    void addSender(String protocol, Sender sender) {
         _senders.put(protocol, sender);
     }
 
@@ -131,7 +131,7 @@ public class MBeanSender implements Dispatcher {
         sender.addServer(server);
     }
 
-    public MBeanCollector scheduleTemplate(String name) {
+    MBeanCollector scheduleTemplate(String name) {
         MBeanCollector collector = null;
         try {
             //check for file via path and classpath,
@@ -161,7 +161,7 @@ public class MBeanSender implements Dispatcher {
         return collector;
     }
 
-    public MBeanCollector schedule(String name) {
+    MBeanCollector schedule(String name) {
         MBeanCollector collector = scheduleTemplate(name);
         if (collector == null) {
             //assume ObjectName, e.g. "sigar:*"
@@ -188,7 +188,7 @@ public class MBeanSender implements Dispatcher {
         }
     }
 
-    public void shutdown() {
+    void shutdown() {
         _scheduler.shutdownNow();
     }
 
@@ -200,7 +200,7 @@ public class MBeanSender implements Dispatcher {
         });
     }
 
-    public void configure(Properties props) {
+    protected void configure(Properties props) {
         //java -Djcd.dest=udp://localhost -Djcd.tmpl=javalang -Djcd.beans=sigar:*
         String dest = props.getProperty("jcd.dest");
         if (dest != null) {
@@ -220,19 +220,17 @@ public class MBeanSender implements Dispatcher {
         }
     }
 
-    protected void init(String args) {
+    void init(String args) {
         if (args == null) {
             return;
         }
         //java -javaagent:collectd.jar="udp://localhost#javalang" -jar sigar.jar
         String[] argv = args.split("#");
-        for (int i=0; i<argv.length; i++) {
-            String arg = argv[i];
-            if (arg.indexOf(PSEP) != -1) {
+        for (String arg : argv) {
+            if (arg.contains(PSEP)) {
                 //e.g. "udp://address:port"
                 addDestination(arg);
-            }
-            else {
+            } else {
                 schedule(arg);
             }
         }        

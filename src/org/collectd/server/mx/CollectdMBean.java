@@ -26,7 +26,7 @@ import java.util.Map;
  */
 public class CollectdMBean implements DynamicMBean {
 
-    private Map<String, Number> _metrics;
+    private final Map<String, Number> _metrics;
 
     public CollectdMBean(Map<String, Number> metrics) {
         _metrics = metrics;
@@ -45,10 +45,10 @@ public class CollectdMBean implements DynamicMBean {
 
     public AttributeList getAttributes(String[] attrs) {
         AttributeList result = new AttributeList();
-        for (int i = 0; i < attrs.length; i++) {
+        for (String attr : attrs) {
             try {
-                result.add(new Attribute(attrs[i],
-                        getAttribute(attrs[i])));
+                result.add(new Attribute(attr,
+                        getAttribute(attr)));
             } catch (AttributeNotFoundException e) {
             } catch (MBeanException e) {
             } catch (ReflectionException e) {
@@ -57,15 +57,15 @@ public class CollectdMBean implements DynamicMBean {
         return result;
     }
 
-    protected String getAttributeType(String name) {
+    String getAttributeType(String name) {
         return _metrics.get(name).getClass().getName();
     }
 
-    protected String getAttributeDescription(String name) {
+    String getAttributeDescription(String name) {
         return name + " Attribute";
     }
 
-    protected MBeanAttributeInfo[] getAttributeInfo() {
+    MBeanAttributeInfo[] getAttributeInfo() {
         MBeanAttributeInfo[] attrs =
                 new MBeanAttributeInfo[_metrics.size()];
         int i = 0;
@@ -82,14 +82,12 @@ public class CollectdMBean implements DynamicMBean {
     }
 
     public MBeanInfo getMBeanInfo() {
-        MBeanInfo info =
-                new MBeanInfo(getClass().getName(),
-                        CollectdMBean.class.getName(),
-                        getAttributeInfo(),
-                        null, //constructors
-                        null, //operations
-                        null); //notifications
-        return info;
+        return new MBeanInfo(getClass().getName(),
+                CollectdMBean.class.getName(),
+                getAttributeInfo(),
+                null, //constructors
+                null, //operations
+                null);
     }
 
     public Object invoke(String arg0, Object[] arg1, String[] arg2)

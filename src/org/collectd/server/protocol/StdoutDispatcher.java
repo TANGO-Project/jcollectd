@@ -34,7 +34,7 @@ import java.util.List;
  */
 public class StdoutDispatcher implements Dispatcher {
 
-    private boolean namesOnly =
+    private final boolean namesOnly =
             "true".equals(Network.getProperty("namesOnly"));
 
     public void dispatch(ValueList vl) {
@@ -49,8 +49,8 @@ public class StdoutDispatcher implements Dispatcher {
             }
             if (ds != null) {
                 List<String> names = new ArrayList<String>();
-                for (int i = 0; i < ds.size(); i++) {
-                    names.add(ds.get(i).getName());
+                for (DataSource d : ds) {
+                    names.add(d.getName());
                 }
                 System.out.print("-->" + names);
             }

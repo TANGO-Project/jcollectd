@@ -73,7 +73,7 @@ public class UdpReceiver {
         }
     }
 
-    public UdpReceiver(Dispatcher dispatcher) {
+    private UdpReceiver(Dispatcher dispatcher) {
         this();
         setDispatcher(dispatcher);
     }
@@ -82,7 +82,7 @@ public class UdpReceiver {
         _dispatcher = dispatcher;
     }
 
-    public int getPort() {
+    protected int getPort() {
         return _port;
     }
 
@@ -149,13 +149,13 @@ public class UdpReceiver {
         for (int i = 0; i < nvalues; i++) {
             Number val;
             if (types[i] == Network.DS_TYPE_COUNTER) {
-                val = new Long(is.readLong());
+                val = is.readLong();
             } else {
                 //collectd uses x86 host order for doubles
                 is.read(dbuff);
                 ByteBuffer bb = ByteBuffer.wrap(dbuff);
                 bb.order(ByteOrder.LITTLE_ENDIAN);
-                val = new Double(bb.getDouble());
+                val = bb.getDouble();
             }
             vl.addValue(val);
         }
@@ -229,6 +229,7 @@ public class UdpReceiver {
                 if (_dispatcher != null) {
                     _dispatcher.dispatch(notif);
                 }
+                System.err.println(obj.getNotification());
             } else if (type == Network.TYPE_SEVERITY) {
                 obj.getNotification().setSeverity((int) is.readLong());
             } else {
@@ -241,7 +242,7 @@ public class UdpReceiver {
         listen(getSocket());
     }
 
-    public void listen(DatagramSocket socket) throws IOException {
+    void listen(DatagramSocket socket) throws IOException {
         while (true) {
             byte[] buf = new byte[Network.BUFFER_SIZE];
             DatagramPacket packet = new DatagramPacket(buf, buf.length);
