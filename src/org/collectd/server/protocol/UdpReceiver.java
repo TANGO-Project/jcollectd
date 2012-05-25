@@ -229,7 +229,7 @@ public class UdpReceiver {
                 if (_dispatcher != null) {
                     _dispatcher.dispatch(notif);
                 }
-                System.err.println(obj.getNotification());
+                System.out.println(notif.toNagiosString());
             } else if (type == Network.TYPE_SEVERITY) {
                 obj.getNotification().setSeverity((int) is.readLong());
             } else {

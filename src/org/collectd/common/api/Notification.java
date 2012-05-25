@@ -64,6 +64,19 @@ public class Notification extends PluginData {
         }
     }
 
+    public int getNagiosSeverity() {
+        switch (_severity) {
+            case FAILURE:
+                return 2;
+            case WARNING:
+                return 1;
+            case OKAY:
+                return 0;
+            default:
+                return 3;
+        }
+    }
+
     public void setMessage(String message) {
         this._message = message;
     }
@@ -76,6 +89,18 @@ public class Notification extends PluginData {
         StringBuilder sb = new StringBuilder(super.toString());
         sb.append(" [").append(getSeverityString()).append("] ");
         sb.append(_message);
+        return sb.toString();
+    }
+
+    public String toNagiosString() {
+        //[<timestamp>] PROCESS_SERVICE_CHECK_RESULT;<host_name>;<svc_description>;<return_code>;<plugin_output>
+        StringBuilder sb = new StringBuilder('[')
+                .append(getTime()).append("] ")
+                .append("PROCESS_SERVICE_CHECK_RESULT;")
+                .append(getHost()).append(';')
+                .append(getPlugin()).append(';')
+                .append(getNagiosSeverity()).append(';')
+                .append(_message);
         return sb.toString();
     }
 }
