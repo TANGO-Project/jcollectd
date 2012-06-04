@@ -92,11 +92,11 @@ Any Java application can be configured to publish MBean data without
 any code changes.  The following example will push java.lang:* MBeans
 to the default collectd multicast group:
 
-        java -Djcd.tmpl=javalang -javaagent:collectd.jar YourMainClass
+        java -Djcd.tmpl=java -javaagent:collectd.jar YourMainClass
 
 Tomcat example:
 
-        export CATALINA_OPTS="-Djcd.instance=hudson -Djcd.dest=udp://10.1.0.102 -Djcd.tmpl=javalang,tomcat -javaagent:collectd.jar"
+        export CATALINA_OPTS="-Djcd.instance=hudson -Djcd.dest=udp://10.1.0.102 -Djcd.tmpl=java,tomcat -javaagent:collectd.jar"
         ./bin/catalina.sh start
 
 #### Configuration
@@ -111,7 +111,7 @@ jcd.properties file:
 
 * jcd.tmpl - jcollectd.xml MBean filter templates (see etc/).  Example:
 
-        jcd.tmpl=javalang,tomcat
+        jcd.tmpl=java,tomcat
 
 * jcd.host - The collectd host (Hostname in collectd.conf) defaults to InetAddress.getLocalHost().getHostName().  Example:
 

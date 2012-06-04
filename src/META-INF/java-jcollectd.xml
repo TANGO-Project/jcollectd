@@ -1,5 +1,5 @@
 <jcollectd-config>
-    <mbeans name="javalang">
+    <mbeans name="java">
         <mbean name="java.lang:type=Memory" alias="Memory">
             <attribute name="HeapMemoryUsage.init" alias="Heap_init" units="bytes" type="memory"/>
             <attribute name="HeapMemoryUsage.committed" alias="Heap_committed" units="bytes" type="memory"/>

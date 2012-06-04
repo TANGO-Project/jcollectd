@@ -135,7 +135,7 @@ public class MBeanSender implements Dispatcher {
         MBeanCollector collector = null;
         try {
             //check for file via path and classpath,
-            //e.g. "javalang", "javalang-jcollectd.xml"
+            //e.g. "java", "java-jcollectd.xml"
             collector = _config.add(name);
         } catch (Exception e) {
             _log.log(Level.WARNING, "add template " + name +
@@ -201,7 +201,7 @@ public class MBeanSender implements Dispatcher {
     }
 
     protected void configure(Properties props) {
-        //java -Djcd.dest=udp://localhost -Djcd.tmpl=javalang -Djcd.beans=sigar:*
+        //java -Djcd.dest=udp://localhost -Djcd.tmpl=java -Djcd.beans=sigar:*
         String dest = props.getProperty("jcd.dest");
         if (dest != null) {
             addDestination(dest);
@@ -224,7 +224,7 @@ public class MBeanSender implements Dispatcher {
         if (args == null) {
             return;
         }
-        //java -javaagent:collectd.jar="udp://localhost#javalang" -jar sigar.jar
+        //java -javaagent:collectd.jar="udp://localhost#java" -jar sigar.jar
         String[] argv = args.split("#");
         for (String arg : argv) {
             if (arg.contains(PSEP)) {

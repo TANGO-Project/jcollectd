@@ -87,7 +87,7 @@ public class MBeanSenderTest
 
     public void testJavaLangTemplate() throws Exception {
         MBeanConfig config = new MBeanConfig();
-        MBeanCollector collector = config.add("javalang");
+        MBeanCollector collector = config.add("java");
         assertNotNull(collector);
         assertTrue(collector.getQueries().size() > 1);
     }

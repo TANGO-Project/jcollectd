@@ -26,10 +26,10 @@ import java.io.File;
 
 public class MBeanConfigTest extends TestCase {
 
-    //etc/javalang-jcollectd.xml
+    //etc/java-jcollectd.xml
     public void testJavaLang() throws Exception {
         MBeanConfig config = new MBeanConfig();
-        MBeanCollector collector = config.add("javalang");
+        MBeanCollector collector = config.add("java");
         assertNotNull(collector);
         assertEquals(collector.getQueries().size(), 4);
     }
