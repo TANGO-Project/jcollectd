@@ -52,13 +52,15 @@ public class Network {
     private static final int UINT32_LEN = UINT16_LEN * 2;
     static final int UINT64_LEN = UINT32_LEN * 2;
     public static final int HEADER_LEN = UINT16_LEN * 2;
-    public static final int BUFFER_SIZE = 1024; // as per collectd/src/network.c
+    public static final int DEFAULT_BUFFER_SIZE = 1452; // as per collectd/src/network.c v5
+    public static final int BUFFER_SIZE;
 
     private static final Properties _props = new Properties();
     private static final String KEY_PREFIX = "jcd.";
 
     static {
         loadProperties();
+        BUFFER_SIZE = Integer.getInteger(KEY_PREFIX.concat("maxBufferSize"), DEFAULT_BUFFER_SIZE);
     }
 
     public static Properties getProperties() {
@@ -70,9 +72,11 @@ public class Network {
         return _props.getProperty(key, System.getProperty(key, defval));
     }
 
+
     public static String getProperty(String name) {
         return getProperty(name, null);
     }
+
 
     private static void loadProperties() {
         String fname = KEY_PREFIX + "properties";
