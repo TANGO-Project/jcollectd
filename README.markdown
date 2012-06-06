@@ -96,7 +96,7 @@ to the default collectd multicast group:
 
 Tomcat example:
 
-        export CATALINA_OPTS="-Djcd.instance=hudson -Djcd.dest=udp://10.1.0.102 -Djcd.tmpl=java,tomcat -javaagent:collectd.jar"
+        export CATALINA_OPTS="-Djcd.instance=hudson -Djcd.dest=udp://10.1.0.102 -Djcd.tmpl=java,tc -javaagent:collectd.jar"
         ./bin/catalina.sh start
 
 #### Configuration
@@ -111,7 +111,7 @@ jcd.properties file:
 
 * jcd.tmpl - jcollectd.xml MBean filter templates (see etc/).  Example:
 
-        jcd.tmpl=java,tomcat
+        jcd.tmpl=java,tc
 
 * jcd.host - The collectd host (Hostname in collectd.conf) defaults to InetAddress.getLocalHost().getHostName().  Example:
 
@@ -120,7 +120,7 @@ jcd.properties file:
 * jcd.instance - The collectd Plugin Instance, defaults to
   *java.lang:type=Runtime:Name*.  Example:
 
-        jcd.instance=tomcat01
+        jcd.instance=tc01
 
 * jcd.beans - ObjectName(s) which are not defined in a filter
   template.  The ObjectName can be a pattern or fully qualified.

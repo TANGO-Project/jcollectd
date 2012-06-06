@@ -24,7 +24,11 @@ import org.collectd.common.protocol.PacketWriter;
 import org.collectd.common.protocol.Sender;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
+import java.net.MulticastSocket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 

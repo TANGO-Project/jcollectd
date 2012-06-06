@@ -25,34 +25,33 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 /**
- * Constants from collectd/src/network.h and jcd.* property configuration.
+ * jcd.* property configuration.
+ * //TODO: simplify
  */
-public class Network {
-    public static final int DEFAULT_PORT = 25826;
-    public static final String DEFAULT_V4_ADDR = "239.192.74.66";
-    public static final String DEFAULT_V6_ADDR = "ff18::efc0:4a42";
+public class Network implements INetwork{
 
-    public static final int TYPE_HOST = 0x0000;
-    public static final int TYPE_TIME = 0x0001;
-    public static final int TYPE_PLUGIN = 0x0002;
-    public static final int TYPE_PLUGIN_INSTANCE = 0x0003;
-    public static final int TYPE_TYPE = 0x0004;
-    public static final int TYPE_TYPE_INSTANCE = 0x0005;
-    public static final int TYPE_VALUES = 0x0006;
-    public static final int TYPE_INTERVAL = 0x0007;
-
-    public static final int TYPE_MESSAGE = 0x0100;
-    public static final int TYPE_SEVERITY = 0x0101;
+    static final int UINT8_LEN = 1;
+    static final int UINT16_LEN = UINT8_LEN * 2;
+    static final int UINT32_LEN = UINT16_LEN * 2;
+    static final int UINT64_LEN = UINT32_LEN * 2;
+    public static final int HEADER_LEN = UINT16_LEN * 2;
 
     public static final int DS_TYPE_COUNTER = 0;
     public static final int DS_TYPE_GAUGE = 1;
 
-    static final int UINT8_LEN = 1;
-    static final int UINT16_LEN = UINT8_LEN * 2;
-    private static final int UINT32_LEN = UINT16_LEN * 2;
-    static final int UINT64_LEN = UINT32_LEN * 2;
-    public static final int HEADER_LEN = UINT16_LEN * 2;
-    public static final int DEFAULT_BUFFER_SIZE = 1452; // as per collectd/src/network.c v5
+    public static final int DEFAULT_PORT = 25826;
+    public static final String DEFAULT_V4_ADDR = "239.192.74.66";
+    public static final String DEFAULT_V6_ADDR = "ff18::efc0:4a42";
+
+
+
+    /**
+     * as per collectd/src/network.c v5
+     * most probably 1472 can also be safe for both ipv4/6 but has to be configured also on a receiving side
+     */
+    public static final int DEFAULT_BUFFER_SIZE = 1452;
+
+    /*to be set in static*/
     public static final int BUFFER_SIZE;
 
     private static final Properties _props = new Properties();
