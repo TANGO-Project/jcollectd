@@ -147,6 +147,21 @@
         </jar>
     </target>
 
-    <target name="dist" depends="test,dist-agent,dist-server"/>
+    <target name="javadoc">
+        <javadoc
+                destdir="${build.dir}/doc"
+                author="true"
+                version="true"
+                use="true"
+                windowtitle="Jcollectd API"
+                >
+
+            <fileset dir="${src.dir}">
+                <include name="**/*.java"/>
+            </fileset>
+        </javadoc>
+    </target>
+
+    <target name="dist" depends="test,dist-agent,dist-server,javadoc"/>
 
 </project>
