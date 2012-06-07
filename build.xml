@@ -1,6 +1,23 @@
 <project xmlns:ivy="antlib:org.apache.ivy.ant" name="jcollectd" default="dist">
     <description>Java collectd</description>
 
+    <!--GET IVY-->
+    <property name="ivy.jar.version" value="2.2.0"/>
+    <property name="ivy.jar.name" value="ivy-${ivy.jar.version}.jar"/>
+    <property name="ivy.home" value="${user.home}/.ivy2"/>
+    <available property="ivy.installed" file="${ivy.home}/${ivy.jar.name}"/>
+    <!--  this is called once and auto-installs the ivy jar into ~/.ivy2 so that users only have to have ant to build. -->
+    <target name="ivy-install" unless="ivy.installed">
+        <mkdir dir="${ivy.home}"/>
+        <get src="http://repo1.maven.org/maven2/org/apache/ivy/ivy/${ivy.jar.version}/${ivy.jar.name}" dest="${ivy.home}/${ivy.jar.name}"/>
+    </target>
+    <!-- this is called automatically and just inits ivy -->
+
+    <target name="ivy-init" depends="ivy-install">
+        <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpath="${ivy.home}/${ivy.jar.name}"/>
+        <ivy:resolve/>
+    </target>
+
     <property name="src.dir" location="src"/>
     <property name="test.dir" location="test"/>
     <property name="lib.dir" value="lib"/>
@@ -69,7 +86,7 @@
         </javac>
     </target>
 
-    <target name="compile" depends="compile-server"/>
+    <target name="compile" depends="ivy-init,compile-server"/>
 
     <target name="compile-tests" depends="compile">
         <ivy:retrieve conf="test" sync="true"/>

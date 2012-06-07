@@ -207,33 +207,44 @@ public class UdpReceiver {
             total -= len;
             len -= Network.HEADER_LEN;
 
-            if (type == Network.TYPE_VALUES) {
-                readValues(is, obj.getValueList());
-            } else if (type == Network.TYPE_TIME) {
-                obj.pd.setTime(is.readLong() * 1000);
-            } else if (type == Network.TYPE_INTERVAL) {
-                obj.getValueList().setInterval(is.readLong());
-            } else if (type == Network.TYPE_HOST) {
-                obj.pd.setHost(readString(is, len));
-            } else if (type == Network.TYPE_PLUGIN) {
-                obj.pd.setPlugin(readString(is, len));
-            } else if (type == Network.TYPE_PLUGIN_INSTANCE) {
-                obj.pd.setPluginInstance(readString(is, len));
-            } else if (type == Network.TYPE_TYPE) {
-                obj.pd.setType(readString(is, len));
-            } else if (type == Network.TYPE_TYPE_INSTANCE) {
-                obj.pd.setTypeInstance(readString(is, len));
-            } else if (type == Network.TYPE_MESSAGE) {
-                Notification notif = obj.getNotification();
-                notif.setMessage(readString(is, len));
-                if (_dispatcher != null) {
-                    _dispatcher.dispatch(notif);
-                }
-                System.out.println(notif.toNagiosString());
-            } else if (type == Network.TYPE_SEVERITY) {
-                obj.getNotification().setSeverity((int) is.readLong());
-            } else {
-                break;
+            switch (type) {
+                case Network.TYPE_VALUES:
+                    readValues(is, obj.getValueList());
+                    break;
+                case Network.TYPE_TIME:
+                    obj.pd.setTime(is.readLong() * 1000);
+                    break;
+                case Network.TYPE_INTERVAL:
+                    obj.getValueList().setInterval(is.readLong());
+                    break;
+                case Network.TYPE_HOST:
+                    obj.pd.setHost(readString(is, len));
+                    break;
+                case Network.TYPE_PLUGIN:
+                    obj.pd.setPlugin(readString(is, len));
+                    break;
+                case Network.TYPE_PLUGIN_INSTANCE:
+                    obj.pd.setPluginInstance(readString(is, len));
+                    break;
+                case Network.TYPE_TYPE:
+                    obj.pd.setType(readString(is, len));
+                    break;
+                case Network.TYPE_TYPE_INSTANCE:
+                    obj.pd.setTypeInstance(readString(is, len));
+                    break;
+                case Network.TYPE_MESSAGE:
+                    Notification notif = obj.getNotification();
+                    notif.setMessage(readString(is, len));
+                    if (_dispatcher != null) {
+                        _dispatcher.dispatch(notif);
+                    }
+                    System.out.println(notif.toNagiosString());
+                    break;
+                case Network.TYPE_SEVERITY:
+                    obj.getNotification().setSeverity((int) is.readLong());
+                    break;
+                default:
+                    break;
             }
         }
     }
