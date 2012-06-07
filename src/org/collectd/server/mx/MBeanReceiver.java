@@ -76,6 +76,7 @@ public class MBeanReceiver
     }
 
     private static boolean checkMxAgent(String[] args) {
+        //todo is it really needed in jdk/jre 6/7
         if (hasMBeanServer()) {
             return true;
         }
@@ -94,7 +95,7 @@ public class MBeanReceiver
             System.err.print("Enabling " + DMX + "...");
             System.setProperty(MX, "true");
             //jdk 6 has a better way, but this works w/ 5 + 6
-            //sun.management.Agent.startAgent();
+            sun.management.Agent.startAgent();
             hasMx = hasMBeanServer();
             System.err.println(hasMx ? "ok" : "failed");
             return hasMx;

@@ -18,13 +18,18 @@
 
 package org.collectd.agent.mx;
 
+import org.collectd.common.api.DataSource;
 import org.collectd.common.api.ValueList;
 import org.collectd.common.mx.MBeanAttribute;
 import org.collectd.common.mx.MBeanQuery;
 import org.collectd.common.protocol.Network;
 import org.collectd.common.protocol.TypesDB;
 
-import javax.management.*;
+import javax.management.Descriptor;
+import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanInfo;
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -138,7 +143,7 @@ public class MBeanCollector implements Runnable {
                           String typeInstance,
                           ObjectName name, MBeanAttribute attr,
                           Number val) {
-        if (attr.getDataType() == Network.DS_TYPE_GAUGE) {
+        if (attr.getDataType() == DataSource.TYPE_GAUGE) {
             val = val.doubleValue();
         } else {
             val = val.longValue();
@@ -205,7 +210,7 @@ public class MBeanCollector implements Runnable {
                         if (attr.getTypeName().equals(TypesDB.NAME_GAUGE)) {
                             attr.setTypeName(TypesDB.NAME_COUNTER);
                         }
-                        attr.setDataType(Network.DS_TYPE_COUNTER);
+                        attr.setDataType(DataSource.TYPE_COUNTER);
                     }
                 } catch (Exception e) {
                 }

@@ -36,9 +36,6 @@ public class Network implements INetwork{
     static final int UINT64_LEN = UINT32_LEN * 2;
     public static final int HEADER_LEN = UINT16_LEN * 2;
 
-    public static final int DS_TYPE_COUNTER = 0;
-    public static final int DS_TYPE_GAUGE = 1;
-
     public static final int DEFAULT_PORT = 25826;
     public static final String DEFAULT_V4_ADDR = "239.192.74.66";
     public static final String DEFAULT_V6_ADDR = "ff18::efc0:4a42";

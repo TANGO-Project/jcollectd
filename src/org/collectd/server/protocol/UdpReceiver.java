@@ -18,6 +18,7 @@
 
 package org.collectd.server.protocol;
 
+import org.collectd.common.api.DataSource;
 import org.collectd.common.api.Notification;
 import org.collectd.common.api.PluginData;
 import org.collectd.common.api.ValueList;
@@ -27,7 +28,12 @@ import org.collectd.common.protocol.Network;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.MulticastSocket;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.logging.Logger;
@@ -148,7 +154,7 @@ public class UdpReceiver {
         }
         for (int i = 0; i < nvalues; i++) {
             Number val;
-            if (types[i] == Network.DS_TYPE_COUNTER) {
+            if (types[i] == DataSource.TYPE_COUNTER) {
                 val = is.readLong();
             } else {
                 //collectd uses x86 host order for doubles
@@ -215,6 +221,12 @@ public class UdpReceiver {
                     obj.pd.setTime(is.readLong() * 1000);
                     break;
                 case Network.TYPE_INTERVAL:
+                    obj.getValueList().setInterval(is.readLong());
+                    break;
+                case Network.TYPE_TIME_HIRES:
+                    obj.pd.setTime(is.readLong() * 1000);
+                    break;
+                case Network.TYPE_INTERVAL_HIRES:
                     obj.getValueList().setInterval(is.readLong());
                     break;
                 case Network.TYPE_HOST:

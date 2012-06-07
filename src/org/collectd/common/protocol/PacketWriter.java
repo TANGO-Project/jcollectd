@@ -121,9 +121,9 @@ public class PacketWriter {
         for (int i = 0; i < num; i++) {
             if (ds_len == 0) {
                 if (values.get(i) instanceof Double) {
-                    types[i] = Network.DS_TYPE_GAUGE;
+                    types[i] = DataSource.TYPE_GAUGE;
                 } else {
-                    types[i] = Network.DS_TYPE_COUNTER;
+                    types[i] = DataSource.TYPE_COUNTER;
                 }
             } else {
                 types[i] = (byte) ds.get(i).getType();
@@ -136,7 +136,7 @@ public class PacketWriter {
 
         for (int i = 0; i < num; i++) {
             Number value = values.get(i);
-            if (types[i] == Network.DS_TYPE_COUNTER) {
+            if (types[i] == DataSource.TYPE_COUNTER) {
                 _os.writeLong(value.longValue());
             } else {
                 writeDouble(value.doubleValue());

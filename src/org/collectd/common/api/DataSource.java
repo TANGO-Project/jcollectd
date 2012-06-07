@@ -22,14 +22,18 @@ package org.collectd.common.api;
  * Java representation of collectd/src/plugin.h:data_source_t structure.
  */
 public class DataSource {
-    private static final int TYPE_COUNTER = 0;
-    private static final int TYPE_GAUGE = 1;
+    public static final int TYPE_COUNTER = 0;
+    public static final int TYPE_GAUGE = 1;
+    public static final int TYPE_DERIVE = 2;
+    public static final int TYPE_ABSOLUTE = 3;
 
     private static final String COUNTER = "COUNTER";
     private static final String GAUGE = "GAUGE";
+    static final String DERIVE = "DERIVE";
+    static final String ABSOLUTE = "ABSOLUTE";
 
     private static final String NAN = "U";
-    private static final String[] TYPES = {COUNTER, GAUGE};
+    private static final String[] TYPES = {COUNTER, GAUGE, DERIVE, ABSOLUTE};
 
     private String _name;
     private int _type;
@@ -38,9 +42,7 @@ public class DataSource {
 
     public DataSource(String name, int type, double min, double max) {
         this._name = name;
-        this._type = TYPE_GAUGE;
-        if (type == TYPE_COUNTER)
-            this._type = TYPE_COUNTER;
+        this._type = type;
         this._min = min;
         this._max = max;
     }
@@ -127,6 +129,12 @@ public class DataSource {
 
         if (fields[1].equals(DataSource.GAUGE)) {
             dsrc._type = TYPE_GAUGE;
+        } else if (fields[1].equals(DataSource.COUNTER)) {
+            dsrc._type = TYPE_COUNTER;
+        } else if (fields[1].equals(DataSource.DERIVE)) {
+            dsrc._type = TYPE_DERIVE;
+        } else if (fields[1].equals(DataSource.ABSOLUTE)) {
+            dsrc._type = TYPE_ABSOLUTE;
         } else {
             dsrc._type = TYPE_COUNTER;
         }

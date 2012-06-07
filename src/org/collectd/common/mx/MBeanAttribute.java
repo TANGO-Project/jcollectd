@@ -19,7 +19,6 @@
 package org.collectd.common.mx;
 
 import org.collectd.common.api.DataSource;
-import org.collectd.common.protocol.Network;
 import org.collectd.common.protocol.TypesDB;
 
 import java.util.List;
@@ -37,7 +36,7 @@ public class MBeanAttribute {
     private int _dataType;
 
     public MBeanAttribute(String attributeName) {
-        this(attributeName, Network.DS_TYPE_GAUGE);
+        this(attributeName, DataSource.TYPE_GAUGE);
     }
 
     private MBeanAttribute(String attributeName, int dataType) {
@@ -47,7 +46,7 @@ public class MBeanAttribute {
     private static int getDataType(String typeName) {
         List<DataSource> ds = _types.getType(typeName);
         if ((ds == null) || (ds.size() == 0)) {
-            return Network.DS_TYPE_GAUGE;
+            return DataSource.TYPE_GAUGE;
         } else {
             return ds.get(0).getType();
         }
@@ -62,7 +61,7 @@ public class MBeanAttribute {
         _dataType = dataType;
         _typeName = typeName;
         if (_typeName == null) {
-            if (dataType == Network.DS_TYPE_COUNTER) {
+            if (dataType == DataSource.TYPE_COUNTER) {
                 _typeName = TypesDB.NAME_COUNTER;
             } else {
                 _typeName = TypesDB.NAME_GAUGE;
