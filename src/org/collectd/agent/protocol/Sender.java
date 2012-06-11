@@ -16,14 +16,12 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-package org.collectd.common.protocol;
+package org.collectd.agent.protocol;
 
-import org.collectd.common.api.Notification;
-import org.collectd.common.api.PluginData;
-import org.collectd.common.api.ValueList;
+import org.collectd.agent.api.Notification;
+import org.collectd.agent.api.Values;
 
 import java.io.IOException;
-import java.net.InetAddress;
 
 /**
  * Protocol independent Sender interface.
@@ -36,40 +34,21 @@ public abstract class Sender implements Dispatcher {
     protected Sender() {
     }
 
-    protected abstract void write(PluginData data) throws IOException;
+    protected abstract void write(Values data) throws IOException;
+
+    protected abstract void write(Notification data) throws IOException;
 
     public abstract void flush() throws IOException;
 
     public abstract void addServer(String server);
 
-    String getHost() {
-        if (_host == null) {
-            try {
-                _host =
-                        InetAddress.getLocalHost().getHostName();
-            } catch (IOException e) {
-                _host = "unknown";
-            }
-        }
-        return _host;
-    }
 
     public void setHost(String host) {
         _host = host;
     }
 
-    protected void setDefaults(PluginData data) {
-        if (data.getHost() == null) {
-            data.setHost(getHost());
-        }
-        if (data.getTime() <= 0) {
-            data.setTime(System.currentTimeMillis());
-        }
-    }
-
-    public void dispatch(ValueList values) {
+    public void dispatch(Values values) {
         try {
-            setDefaults(values);
             write(values);
         } catch (IOException e) {
             //XXX
@@ -79,7 +58,6 @@ public abstract class Sender implements Dispatcher {
 
     public void dispatch(Notification notification) {
         try {
-            setDefaults(notification);
             write(notification);
         } catch (IOException e) {
             //XXX

@@ -1,4 +1,4 @@
-package org.collectd.common.protocol;
+package org.collectd.agent.protocol;
 
 /**
  * Constants from collectd/src/network.h
@@ -43,7 +43,7 @@ public interface INetwork {
     public static final int TYPE_TYPE_INSTANCE = 0x0005;
 
     /**
-     * Values - Data values
+     * Values - Identifier values
      *
      */
     public static final int TYPE_VALUES = 0x0006;

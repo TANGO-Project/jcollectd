@@ -20,7 +20,7 @@ package org.collectd.server.protocol;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import org.collectd.common.protocol.Network;
+import org.collectd.agent.protocol.Network;
 
 import java.io.IOException;
 import java.net.DatagramSocket;

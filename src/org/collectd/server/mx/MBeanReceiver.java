@@ -18,7 +18,6 @@
 
 package org.collectd.server.mx;
 
-import org.collectd.common.protocol.Dispatcher;
 import org.collectd.server.protocol.UdpReceiver;
 
 import javax.management.MBeanServerFactory;

@@ -18,10 +18,8 @@
 
 package org.collectd.agent.protocol;
 
-import org.collectd.common.api.PluginData;
-import org.collectd.common.protocol.Network;
-import org.collectd.common.protocol.PacketWriter;
-import org.collectd.common.protocol.Sender;
+import org.collectd.agent.api.Notification;
+import org.collectd.agent.api.Values;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -46,6 +44,23 @@ public class UdpSender extends Sender {
         _servers = new ArrayList<InetSocketAddress>();
         _writer = new PacketWriter();
     }
+
+    @Override
+    protected void write(Values data) throws IOException {
+        int len = _writer.getSize();
+        _writer.write(data);
+        if (_writer.getSize() >= Network.BUFFER_SIZE) {
+            send(_writer.getBytes(), len);
+            _writer.reset();
+            _writer.write(data);//redo XXX better way?
+        }
+    }
+
+    @Override
+    protected void write(Notification data) throws IOException {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
 
     public void addServer(String server) {
         String ip;
@@ -78,17 +93,6 @@ public class UdpSender extends Sender {
             _mcast.setTimeToLive(1);
         }
         return _mcast;
-    }
-
-    protected void write(PluginData data) throws IOException {
-        setDefaults(data);
-        int len = _writer.getSize();
-        _writer.write(data);
-        if (_writer.getSize() >= Network.BUFFER_SIZE) {
-            send(_writer.getBytes(), len);
-            _writer.reset();
-            _writer.write(data);//redo XXX better way?
-        }
     }
 
     private void send(byte[] buffer, int len) throws IOException {

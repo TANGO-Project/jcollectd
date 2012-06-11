@@ -21,10 +21,9 @@ package org.collectd.agent.protocol;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.collectd.common.api.Notification;
-import org.collectd.common.api.ValueList;
-import org.collectd.common.protocol.Dispatcher;
-import org.collectd.common.protocol.Sender;
+import org.collectd.agent.api.Notification;
+import org.collectd.agent.api.PacketBuilder;
+import org.collectd.agent.api.Values;
 import org.collectd.server.protocol.ReceiverTest;
 import org.collectd.server.protocol.UdpReceiver;
 
@@ -44,7 +43,7 @@ public class SenderTest
     private final double[] dvals = {1.0, 66.77, Double.MAX_VALUE};
     private final long[] lvals = {1, 66, Long.MAX_VALUE, 4};
 
-    private final List<ValueList> _values = new ArrayList<ValueList>();
+    private final List<Values> _values = new ArrayList<Values>();
     private Sender _sender;
     private ReceiverTest _receiverTest;
 
@@ -81,16 +80,12 @@ public class SenderTest
         _receiverTest.tearDown();
     }
 
-    private ValueList newValueList() {
-        ValueList vl = new ValueList();
-        vl.setPlugin(PLUGIN);
-        vl.setPluginInstance(PLUGIN_INSTANCE);
-        vl.setInterval(INTERVAL);
-        vl.setType(TYPE);
+    private Values newValueList() {
+        Values vl = PacketBuilder.newInstance().plugin(PLUGIN).pluginInstance(PLUGIN_INSTANCE).interval(INTERVAL).type(TYPE).buildValues();
         return vl;
     }
 
-    private void assertValueList(ValueList vl,
+    private void assertValueList(Values vl,
                                  String host, long time)
             throws Exception {
 
@@ -112,7 +107,7 @@ public class SenderTest
     }
 
     public void testGauge() throws Exception {
-        ValueList vl = newValueList();
+        Values vl = newValueList();
         for (double val : dvals) {
             vl.addValue(val);
         }
@@ -123,9 +118,9 @@ public class SenderTest
         assertEquals(_values.size(), 1);
         vl = _values.get(0);
         assertValueList(vl, host, time);
-        assertEquals(vl.getValues().size(), dvals.length);
+        assertEquals(vl.getList().size(), dvals.length);
         int i = 0;
-        for (Number num : vl.getValues()) {
+        for (Number num : vl.getList()) {
             assertEquals(num.getClass(), Double.class);
             assertEquals(num.doubleValue(), dvals[i++]);
         }
@@ -133,7 +128,7 @@ public class SenderTest
     }
 
     public void testCounter() throws Exception {
-        ValueList vl = newValueList();
+        Values vl = newValueList();
         for (long val : lvals) {
             vl.addValue(val);
         }
@@ -144,9 +139,9 @@ public class SenderTest
         assertEquals(_values.size(), 1);
         vl = _values.get(0);
         assertValueList(vl, host, time);
-        assertEquals(vl.getValues().size(), lvals.length);
+        assertEquals(vl.getList().size(), lvals.length);
         int i = 0;
-        for (Number num : vl.getValues()) {
+        for (Number num : vl.getList()) {
             assertEquals(num.getClass(), Long.class);
             assertEquals(num.longValue(), lvals[i++]);
         }
@@ -157,7 +152,7 @@ public class SenderTest
 
     }
 
-    public void dispatch(ValueList vl) {
-        _values.add(new ValueList(vl));
+    public void dispatch(Values vl) {
+        _values.add(vl);
     }
 }

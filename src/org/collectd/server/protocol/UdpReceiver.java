@@ -18,12 +18,10 @@
 
 package org.collectd.server.protocol;
 
-import org.collectd.common.api.DataSource;
-import org.collectd.common.api.Notification;
-import org.collectd.common.api.PluginData;
-import org.collectd.common.api.ValueList;
-import org.collectd.common.protocol.Dispatcher;
-import org.collectd.common.protocol.Network;
+import org.collectd.agent.api.PacketBuilder;
+import org.collectd.agent.api.Type;
+import org.collectd.agent.protocol.Dispatcher;
+import org.collectd.agent.protocol.Network;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -144,7 +142,7 @@ public class UdpReceiver {
         return new String(buf, 0, len - 1); //-1 -> skip \0
     }
 
-    private void readValues(DataInputStream is, ValueList vl)
+    private void readValues(DataInputStream is, PacketBuilder vl)
             throws IOException {
         byte[] dbuff = new byte[8];
         int nvalues = is.readUnsignedShort();
@@ -154,7 +152,7 @@ public class UdpReceiver {
         }
         for (int i = 0; i < nvalues; i++) {
             Number val;
-            if (types[i] == DataSource.TYPE_COUNTER) {
+            if (types[i] == Type.COUNTER.value) {
                 val = is.readLong();
             } else {
                 //collectd uses x86 host order for doubles
@@ -166,31 +164,7 @@ public class UdpReceiver {
             vl.addValue(val);
         }
         if (_dispatcher != null) {
-            _dispatcher.dispatch(vl);
-        }
-        vl.clearValues();
-    }
-
-    //a union of sorts
-    private static class PacketObject {
-        ValueList vl;
-        Notification notif;
-        PluginData pd = new PluginData();
-
-        ValueList getValueList() {
-            if (vl == null) {
-                vl = new ValueList(pd);
-                pd = vl;
-            }
-            return vl;
-        }
-
-        Notification getNotification() {
-            if (notif == null) {
-                notif = new Notification(pd);
-                pd = notif;
-            }
-            return notif;
+            _dispatcher.dispatch(vl.buildValues());
         }
     }
 
@@ -200,7 +174,7 @@ public class UdpReceiver {
                 new ByteArrayInputStream(packet);
         DataInputStream is =
                 new DataInputStream(buffer);
-        PacketObject obj = new PacketObject();
+        PacketBuilder dataBuilder = PacketBuilder.newInstance();
 
         while ((0 < total) && (total > Network.HEADER_LEN)) {
             int type = is.readUnsignedShort();
@@ -215,45 +189,54 @@ public class UdpReceiver {
 
             switch (type) {
                 case Network.TYPE_VALUES:
-                    readValues(is, obj.getValueList());
+                    readValues(is, dataBuilder);
                     break;
                 case Network.TYPE_TIME:
-                    obj.pd.setTime(is.readLong() * 1000);
+                    long tmp = is.readLong()*1000;
+                    dataBuilder.time(tmp);
                     break;
                 case Network.TYPE_INTERVAL:
-                    obj.getValueList().setInterval(is.readLong());
+                    long interval = is.readLong();
+                    dataBuilder.interval(interval);
                     break;
                 case Network.TYPE_TIME_HIRES:
-                    obj.pd.setTime(is.readLong() * 1000);
+                    long thi = is.readLong()*1000;
+                    dataBuilder.time(thi);
                     break;
                 case Network.TYPE_INTERVAL_HIRES:
-                    obj.getValueList().setInterval(is.readLong());
+                    long ihi = is.readLong();
+                    dataBuilder.interval(ihi);
                     break;
                 case Network.TYPE_HOST:
-                    obj.pd.setHost(readString(is, len));
+                    String host = readString(is, len);
+                    dataBuilder.host(host);
                     break;
                 case Network.TYPE_PLUGIN:
-                    obj.pd.setPlugin(readString(is, len));
+                    String plugin = readString(is, len);
+                    dataBuilder.plugin(plugin);
                     break;
                 case Network.TYPE_PLUGIN_INSTANCE:
-                    obj.pd.setPluginInstance(readString(is, len));
+                    String pluginInstance = readString(is, len);
+                    dataBuilder.pluginInstance(pluginInstance);
                     break;
                 case Network.TYPE_TYPE:
-                    obj.pd.setType(readString(is, len));
+                    String _type = readString(is, len);
+                    dataBuilder.type(_type);
                     break;
                 case Network.TYPE_TYPE_INSTANCE:
-                    obj.pd.setTypeInstance(readString(is, len));
+                    String tI = readString(is, len);
+                    dataBuilder.typeInstance(tI);
                     break;
                 case Network.TYPE_MESSAGE:
-                    Notification notif = obj.getNotification();
-                    notif.setMessage(readString(is, len));
+                    String msg = readString(is, len);
+                    dataBuilder.message(msg);
                     if (_dispatcher != null) {
-                        _dispatcher.dispatch(notif);
+                        _dispatcher.dispatch(dataBuilder.buildNotification());
                     }
-                    System.out.println(notif.toNagiosString());
                     break;
                 case Network.TYPE_SEVERITY:
-                    obj.getNotification().setSeverity((int) is.readLong());
+                    int sev = (int) is.readLong();
+                    dataBuilder.severity(sev);
                     break;
                 default:
                     break;

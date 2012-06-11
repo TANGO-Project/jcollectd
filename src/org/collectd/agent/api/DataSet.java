@@ -19,7 +19,7 @@
  *   Florian octo Forster <octo at verplant.org>
  */
 
-package org.collectd.common.api;
+package org.collectd.agent.api;
 
 import java.util.ArrayList;
 import java.util.List;

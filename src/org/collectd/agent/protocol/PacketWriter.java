@@ -16,11 +16,11 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-package org.collectd.common.protocol;
+package org.collectd.agent.protocol;
 
-import org.collectd.common.api.DataSource;
-import org.collectd.common.api.PluginData;
-import org.collectd.common.api.ValueList;
+import org.collectd.agent.api.Type;
+import org.collectd.agent.api.Values;
+import org.collectd.agent.api.DataSource;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -63,7 +63,7 @@ public class PacketWriter {
         _bos.reset();
     }
 
-    public void write(PluginData data)
+    public void write(Values data)
             throws IOException {
 
         String type = data.getType();
@@ -75,10 +75,8 @@ public class PacketWriter {
         writeString(Network.TYPE_TYPE, type);
         writeString(Network.TYPE_TYPE_INSTANCE, data.getTypeInstance());
 
-        if (data instanceof ValueList) {
-            ValueList vl = (ValueList) data;
             List<DataSource> ds = _types.getType(type);
-            List<Number> values = vl.getValues();
+            List<Number> values = data.getList();
 
             if ((ds != null) && (ds.size() != values.size())) {
                 String msg =
@@ -87,12 +85,12 @@ public class PacketWriter {
                 throw new IOException(msg);
             }
 
-            writeNumber(Network.TYPE_INTERVAL, vl.getInterval());
+            writeNumber(Network.TYPE_INTERVAL, data.getInterval());
             writeValues(ds, values);
-        } else {
-            //XXX Notification
-        }
+
     }
+
+
 
     private void writeHeader(int type, int len)
             throws IOException {
@@ -121,9 +119,9 @@ public class PacketWriter {
         for (int i = 0; i < num; i++) {
             if (ds_len == 0) {
                 if (values.get(i) instanceof Double) {
-                    types[i] = DataSource.TYPE_GAUGE;
+                    types[i] = (byte) Type.GAUGE.value;
                 } else {
-                    types[i] = DataSource.TYPE_COUNTER;
+                    types[i] = (byte) Type.COUNTER.value;
                 }
             } else {
                 types[i] = (byte) ds.get(i).getType();
@@ -136,7 +134,7 @@ public class PacketWriter {
 
         for (int i = 0; i < num; i++) {
             Number value = values.get(i);
-            if (types[i] == DataSource.TYPE_COUNTER) {
+            if (types[i] == Type.COUNTER.value) {
                 _os.writeLong(value.longValue());
             } else {
                 writeDouble(value.doubleValue());

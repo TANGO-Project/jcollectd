@@ -19,9 +19,9 @@
 package org.collectd.agent.mx;
 
 import junit.framework.TestCase;
-import org.collectd.common.api.Notification;
-import org.collectd.common.api.ValueList;
-import org.collectd.common.protocol.Dispatcher;
+import org.collectd.agent.api.Notification;
+import org.collectd.agent.api.Values;
+import org.collectd.agent.protocol.Dispatcher;
 import org.collectd.server.mx.CollectdMBean;
 import org.collectd.server.protocol.ReceiverTest;
 import org.collectd.server.protocol.UdpReceiver;
@@ -111,7 +111,7 @@ public class MBeanSenderTest
         _numNotif++;
     }
 
-    public void dispatch(ValueList vl) {
+    public void dispatch(Values vl) {
         _numValues++;
         if (vl.getPlugin().equals(PLUGIN)) {
             _numMyValues++;

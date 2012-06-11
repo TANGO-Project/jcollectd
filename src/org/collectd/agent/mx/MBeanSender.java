@@ -19,11 +19,11 @@
 package org.collectd.agent.mx;
 
 import org.collectd.agent.protocol.UdpSender;
-import org.collectd.common.api.Notification;
-import org.collectd.common.api.ValueList;
-import org.collectd.common.protocol.Dispatcher;
-import org.collectd.common.protocol.Network;
-import org.collectd.common.protocol.Sender;
+import org.collectd.agent.api.Notification;
+import org.collectd.agent.api.Values;
+import org.collectd.agent.protocol.Dispatcher;
+import org.collectd.agent.protocol.Network;
+import org.collectd.agent.protocol.Sender;
 
 import javax.management.MBeanServerConnection;
 import javax.management.MalformedObjectNameException;
@@ -169,14 +169,14 @@ public class MBeanSender implements Dispatcher {
         }
         return collector;
     }
-    
+
     public void dispatch(Notification notification) {
         for (Sender sender : _senders.values()) {
             sender.dispatch(notification);
         }
     }
 
-    public void dispatch(ValueList values) {
+    public void dispatch(Values values) {
         for (Sender sender : _senders.values()) {
             sender.dispatch(values);
         }

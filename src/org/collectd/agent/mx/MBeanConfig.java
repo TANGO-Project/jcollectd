@@ -18,9 +18,7 @@
 
 package org.collectd.agent.mx;
 
-import org.collectd.common.mx.MBeanAttribute;
-import org.collectd.common.mx.MBeanQuery;
-import org.collectd.common.protocol.TypesDB;
+import org.collectd.agent.protocol.TypesDB;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -32,6 +30,7 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.io.File;
 import java.io.InputStream;
+
 
 /**
  * Convert jcollectd.xml filters to MBeanCollect objects.

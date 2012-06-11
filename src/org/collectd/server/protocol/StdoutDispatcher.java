@@ -18,12 +18,12 @@
 
 package org.collectd.server.protocol;
 
-import org.collectd.common.api.DataSource;
-import org.collectd.common.api.Notification;
-import org.collectd.common.api.ValueList;
-import org.collectd.common.protocol.Dispatcher;
-import org.collectd.common.protocol.Network;
-import org.collectd.common.protocol.TypesDB;
+import org.collectd.agent.api.Values;
+import org.collectd.agent.api.DataSource;
+import org.collectd.agent.api.Notification;
+import org.collectd.agent.protocol.Dispatcher;
+import org.collectd.agent.protocol.Network;
+import org.collectd.agent.protocol.TypesDB;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +37,7 @@ public class StdoutDispatcher implements Dispatcher {
     private final boolean namesOnly =
             "true".equals(Network.getProperty("namesOnly"));
 
-    public void dispatch(ValueList vl) {
+    public void dispatch(Values vl) {
         if (namesOnly) {
             System.out.print("plugin=" + vl.getPlugin());
             System.out.print(",pluginInstance=" + vl.getPluginInstance());

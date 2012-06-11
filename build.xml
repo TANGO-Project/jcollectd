@@ -51,18 +51,7 @@
         <mkdir dir="${classes}"/>
     </target>
 
-    <target name="compile-common" depends="clean">
-        <mkdir dir="${classes.agent}"/>
-        <mkdir dir="${classes.agent}/META-INF"/>
-        <copy todir="${classes.agent}/META-INF">
-            <fileset dir="${src.dir}/META-INF"/>
-        </copy>
-        <javac sourcepath="" srcdir="${src.dir}" destdir="${classes.agent}" debug="${debug}" source="1.6" target="1.6">
-            <include name="org/collectd/common/**"/>
-        </javac>
-    </target>
-
-    <target name="compile-agent" depends="compile-common">
+    <target name="compile-agent" depends="clean">
         <mkdir dir="${classes.agent}"/>
         <mkdir dir="${classes.agent}/META-INF"/>
         <copy todir="${classes.agent}/META-INF">

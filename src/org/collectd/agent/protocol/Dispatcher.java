@@ -16,17 +16,17 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-package org.collectd.common.protocol;
+package org.collectd.agent.protocol;
 
-import org.collectd.common.api.Notification;
-import org.collectd.common.api.ValueList;
+import org.collectd.agent.api.Notification;
+import org.collectd.agent.api.Values;
 
 /**
  * Java interface equivalent of:
  * collectd/src/plugin.h:plugin_dispatch_values,plugin_dispatch_notification
  */
 public interface Dispatcher {
-    public void dispatch(ValueList values);
+    public void dispatch(Values values);
 
     public void dispatch(Notification notification);
 }

@@ -21,6 +21,7 @@ package org.collectd.common.mx;
 import junit.framework.TestCase;
 import org.collectd.agent.mx.MBeanCollector;
 import org.collectd.agent.mx.MBeanConfig;
+import org.collectd.agent.mx.MBeanQuery;
 
 import java.io.File;
 

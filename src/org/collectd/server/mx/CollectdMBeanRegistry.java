@@ -18,13 +18,14 @@
 
 package org.collectd.server.mx;
 
-import org.collectd.common.api.DataSource;
-import org.collectd.common.api.Notification;
-import org.collectd.common.api.PluginData;
-import org.collectd.common.api.ValueList;
-import org.collectd.common.protocol.Dispatcher;
-import org.collectd.common.protocol.Network;
-import org.collectd.common.protocol.TypesDB;
+import org.collectd.agent.api.Identifier;
+import org.collectd.agent.api.NotificationSeverity;
+import org.collectd.agent.api.Values;
+import org.collectd.agent.api.DataSource;
+import org.collectd.agent.api.Notification;
+import org.collectd.agent.protocol.Dispatcher;
+import org.collectd.agent.protocol.Network;
+import org.collectd.agent.protocol.TypesDB;
 
 import javax.management.*;
 import java.lang.management.ManagementFactory;
@@ -72,7 +73,7 @@ public class CollectdMBeanRegistry
         return Pattern.compile(hosts);
     }
 
-    private static boolean excludeHost(PluginData data) {
+    private static boolean excludeHost(Identifier data) {
         if (_hosts == null) {
             return false;
         }
@@ -91,7 +92,7 @@ public class CollectdMBeanRegistry
                 notif.getMessage()));
     }
 
-    private String getRootName(String host, ValueList vl) {
+    private String getRootName(String host, Values vl) {
         StringBuilder name = new StringBuilder();
         name.append(DOMAIN).append(':');
         if (host != null) {
@@ -104,7 +105,7 @@ public class CollectdMBeanRegistry
         return name.toString();
     }
 
-    private String getPluginRootName(String pname, ValueList vl) {
+    private String getPluginRootName(String pname, Values vl) {
         StringBuilder name = new StringBuilder();
         name.append(DOMAIN).append(':');
         name.append("host=").append(vl.getHost()).append(',');
@@ -132,7 +133,7 @@ public class CollectdMBeanRegistry
         return bean.get(attribute);
     }
 
-    private Map<String, Number> getMBean(ValueList vl) {
+    private Map<String, Number> getMBean(Values vl) {
         String instance = vl.getPluginInstance();
 
         StringBuilder bname = new StringBuilder();
@@ -185,7 +186,7 @@ public class CollectdMBeanRegistry
         return metrics;
     }
 
-    private void registerSummaryMBean(ValueList vl, Map<String, Number> metrics) throws MalformedObjectNameException, MBeanRegistrationException, InstanceAlreadyExistsException, NotCompliantMBeanException {
+    private void registerSummaryMBean(Values vl, Map<String, Number> metrics) throws MalformedObjectNameException, MBeanRegistrationException, InstanceAlreadyExistsException, NotCompliantMBeanException {
         ObjectName sname =
                 new ObjectName(getRootName(AVERAGE, vl));
         if (!bs.isRegistered(sname)) {
@@ -193,7 +194,7 @@ public class CollectdMBeanRegistry
         }
     }
 
-    private CollectdSummaryMBean registerPluginSummaryMBean(ValueList vl, Map<String, Number> metrics) throws MalformedObjectNameException, MBeanRegistrationException, InstanceAlreadyExistsException, NotCompliantMBeanException {
+    private CollectdSummaryMBean registerPluginSummaryMBean(Values vl, Map<String, Number> metrics) throws MalformedObjectNameException, MBeanRegistrationException, InstanceAlreadyExistsException, NotCompliantMBeanException {
         ObjectName sname =
                 new ObjectName(getPluginRootName(AVERAGE, vl));
         if (!bs.isRegistered(sname)) {
@@ -210,12 +211,12 @@ public class CollectdMBeanRegistry
         return summary;
     }
 
-    public void dispatch(ValueList vl) {
+    public void dispatch(Values vl) {
         if (excludeHost(vl)) {
             return;
         }
         String type = vl.getType();
-        List<Number> values = vl.getValues();
+        List<Number> values = vl.getList();
         int size = values.size();
         Map<String, Number> metrics = getMBean(vl);
         String key;
@@ -253,7 +254,7 @@ public class CollectdMBeanRegistry
 
     public MBeanNotificationInfo[] getNotificationInfo() {
         return new MBeanNotificationInfo[]{
-                new MBeanNotificationInfo(Notification.SEVERITY,
+                new MBeanNotificationInfo((String[]) NotificationSeverity.names(),
                         javax.management.Notification.class.getName(),
                         "Collectd Notifications"),
         };

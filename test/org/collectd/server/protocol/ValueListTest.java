@@ -21,10 +21,11 @@ package org.collectd.server.protocol;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.collectd.common.api.Notification;
-import org.collectd.common.api.ValueList;
-import org.collectd.common.protocol.Dispatcher;
-import org.collectd.common.protocol.PacketWriter;
+import org.collectd.agent.api.Notification;
+import org.collectd.agent.api.PacketBuilder;
+import org.collectd.agent.api.Values;
+import org.collectd.agent.protocol.Dispatcher;
+import org.collectd.agent.protocol.PacketWriter;
 
 import java.io.IOException;
 import java.util.List;
@@ -47,25 +48,21 @@ public class ValueListTest extends TestCase {
         return new TestSuite(ValueListTest.class);
     }
 
-    private ValueList dummyValueList() {
-        ValueList vl = new ValueList();
-        vl.setHost(HOST);
-        vl.setInterval(interval);
-        vl.setTime(now);
-        vl.setPlugin(PLUGIN);
-        vl.setPluginInstance(ValueListTest.class.getName());
+    private Values dummyValueList() {
+
+        Values vl = PacketBuilder.newInstance().host(HOST).interval(interval).time(now).plugin(PLUGIN).pluginInstance(ValueListTest.class.getName()).buildValues();
         for (double value : values) {
             vl.addValue(value);
         }
         return vl;
     }
 
-    private void dummyAssert(ValueList vl) {
+    private void dummyAssert(Values vl) {
         assertEquals(vl.getHost(), HOST);
         assertEquals(vl.getInterval(), interval);
         assertEquals(vl.getTime(), now);
         assertEquals(vl.getPlugin(), PLUGIN);
-        List<Number> vals = vl.getValues();
+        List<Number> vals = vl.getList();
         for (int i = 0; i < values.length; i++) {
             assertEquals(vals.get(i).doubleValue(), values[i]);
         }
@@ -82,13 +79,13 @@ public class ValueListTest extends TestCase {
             //XXX
         }
 
-        public void dispatch(ValueList vl) {
+        public void dispatch(Values vl) {
             dummyAssert(vl);
         }
     }
 
     public void testWriter() throws IOException {
-        ValueList vl = dummyValueList();
+        Values vl = dummyValueList();
         PacketWriter pw = new PacketWriter();
         pw.write(vl);
         UdpReceiver receiver = new UdpReceiver();

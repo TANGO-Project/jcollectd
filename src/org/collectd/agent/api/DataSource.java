@@ -16,31 +16,21 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-package org.collectd.common.api;
+package org.collectd.agent.api;
 
 /**
  * Java representation of collectd/src/plugin.h:data_source_t structure.
  */
 public class DataSource {
-    public static final int TYPE_COUNTER = 0;
-    public static final int TYPE_GAUGE = 1;
-    public static final int TYPE_DERIVE = 2;
-    public static final int TYPE_ABSOLUTE = 3;
-
-    private static final String COUNTER = "COUNTER";
-    private static final String GAUGE = "GAUGE";
-    static final String DERIVE = "DERIVE";
-    static final String ABSOLUTE = "ABSOLUTE";
 
     private static final String NAN = "U";
-    private static final String[] TYPES = {COUNTER, GAUGE, DERIVE, ABSOLUTE};
 
     private String _name;
-    private int _type;
+    private Type _type;
     private double _min;
     private double _max;
 
-    public DataSource(String name, int type, double min, double max) {
+    public DataSource(String name, Type type, double min, double max) {
         this._name = name;
         this._type = type;
         this._min = min;
@@ -50,7 +40,7 @@ public class DataSource {
     /* Needed in parseDataSource below. Other code should use the above
      * constructor or `parseDataSource'. */
     private DataSource() {
-        this._type = TYPE_GAUGE;
+        this._type = Type.GAUGE;
     }
 
     public String getName() {
@@ -62,10 +52,10 @@ public class DataSource {
     }
 
     public int getType() {
-        return _type;
+        return _type.value;
     }
 
-    public void setType(int type) {
+    public void setType(Type type) {
         _type = type;
     }
 
@@ -105,7 +95,7 @@ public class DataSource {
         StringBuilder sb = new StringBuilder();
         final char DLM = ':';
         sb.append(_name).append(DLM);
-        sb.append(TYPES[_type]).append(DLM);
+        sb.append(_type.value).append(DLM);
         sb.append(asString(_min)).append(DLM);
         sb.append(asString(_max));
         return sb.toString();
@@ -127,23 +117,23 @@ public class DataSource {
 
         dsrc._name = fields[0];
 
-        if (fields[1].equals(DataSource.GAUGE)) {
-            dsrc._type = TYPE_GAUGE;
-        } else if (fields[1].equals(DataSource.COUNTER)) {
-            dsrc._type = TYPE_COUNTER;
-        } else if (fields[1].equals(DataSource.DERIVE)) {
-            dsrc._type = TYPE_DERIVE;
-        } else if (fields[1].equals(DataSource.ABSOLUTE)) {
-            dsrc._type = TYPE_ABSOLUTE;
+        if (fields[1].equals(Type.GAUGE.value)) {
+            dsrc._type = Type.GAUGE;
+        } else if (fields[1].equals(Type.COUNTER)) {
+            dsrc._type = Type.COUNTER;
+        } else if (fields[1].equals(Type.DERIVE)) {
+            dsrc._type = Type.DERIVE;
+        } else if (fields[1].equals(Type.ABSOLUTE)) {
+            dsrc._type = Type.ABSOLUTE;
         } else {
-            dsrc._type = TYPE_COUNTER;
+            dsrc._type = Type.COUNTER;
         }
 
         dsrc._min = toDouble(fields[2]);
         dsrc._max = toDouble(fields[3]);
 
         return (dsrc);
-    } /* DataSource parseDataSource */
+    } /* Type parseDataSource */
 }
 
 /* vim: set sw=4 sts=4 et : */

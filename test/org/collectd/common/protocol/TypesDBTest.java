@@ -21,6 +21,7 @@ package org.collectd.common.protocol;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.collectd.agent.protocol.TypesDB;
 
 import java.io.IOException;
 

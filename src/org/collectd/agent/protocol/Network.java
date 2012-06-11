@@ -16,7 +16,7 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-package org.collectd.common.protocol;
+package org.collectd.agent.protocol;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,7 +28,7 @@ import java.util.logging.Logger;
  * jcd.* property configuration.
  * //TODO: simplify
  */
-public class Network implements INetwork{
+public class Network implements INetwork {
 
     static final int UINT8_LEN = 1;
     static final int UINT16_LEN = UINT8_LEN * 2;

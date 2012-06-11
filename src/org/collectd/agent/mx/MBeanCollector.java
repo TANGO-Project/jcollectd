@@ -18,12 +18,10 @@
 
 package org.collectd.agent.mx;
 
-import org.collectd.common.api.DataSource;
-import org.collectd.common.api.ValueList;
-import org.collectd.common.mx.MBeanAttribute;
-import org.collectd.common.mx.MBeanQuery;
-import org.collectd.common.protocol.Network;
-import org.collectd.common.protocol.TypesDB;
+import org.collectd.agent.api.PacketBuilder;
+import org.collectd.agent.api.Type;
+import org.collectd.agent.protocol.Network;
+import org.collectd.agent.protocol.TypesDB;
 
 import javax.management.Descriptor;
 import javax.management.MBeanAttributeInfo;
@@ -143,7 +141,7 @@ public class MBeanCollector implements Runnable {
                           String typeInstance,
                           ObjectName name, MBeanAttribute attr,
                           Number val) {
-        if (attr.getDataType() == DataSource.TYPE_GAUGE) {
+        if (Type.GAUGE.equals(attr.getDataType())) {
             val = val.doubleValue();
         } else {
             val = val.longValue();
@@ -154,9 +152,9 @@ public class MBeanCollector implements Runnable {
             pluginInstance = _sender.getInstanceName();
         }
         String beanName = query.getAlias();
-        ValueList vl = new ValueList();
-        vl.setInterval(getInterval());
-        vl.setPlugin(plugin);
+        PacketBuilder builder = PacketBuilder.newInstance();
+        builder.interval(getInterval());
+        builder.plugin(plugin);
         if (beanName == null) {
             beanName = getBeanName(null, name);
         } else if (query.getName().isPattern()) {
@@ -165,11 +163,11 @@ public class MBeanCollector implements Runnable {
                 beanName += " " + instName;
             }
         }
-        vl.setPluginInstance(pluginInstance + "-" + beanName);
-        vl.setType(attr.getTypeName());
-        vl.setTypeInstance(typeInstance);
-        vl.addValue(val);
-        _sender.dispatch(vl);
+        builder.pluginInstance(pluginInstance + "-" + beanName);
+        builder.type(attr.getTypeName());
+        builder.typeInstance(typeInstance);
+        builder.addValue(val);
+        _sender.dispatch(builder.buildValues());
     }
 
     void collect(MBeanQuery query, ObjectName name) throws Exception {
@@ -210,7 +208,7 @@ public class MBeanCollector implements Runnable {
                         if (attr.getTypeName().equals(TypesDB.NAME_GAUGE)) {
                             attr.setTypeName(TypesDB.NAME_COUNTER);
                         }
-                        attr.setDataType(DataSource.TYPE_COUNTER);
+                        attr.setDataType(Type.COUNTER.value);
                     }
                 } catch (Exception e) {
                 }

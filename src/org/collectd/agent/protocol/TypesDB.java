@@ -16,10 +16,10 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-package org.collectd.common.protocol;
+package org.collectd.agent.protocol;
 
-import org.collectd.common.api.DataSet;
-import org.collectd.common.api.DataSource;
+import org.collectd.agent.api.DataSet;
+import org.collectd.agent.api.DataSource;
 
 import java.io.*;
 import java.util.HashMap;
@@ -36,7 +36,7 @@ public class TypesDB {
     public static final String NAME_COUNTER = "counter";
     public static final String NAME_GAUGE = "gauge";
 
-    //List<DataSource> == plugin.h:data_set_t
+    //List<Type> == plugin.h:data_set_t
     private final Map<String, List<DataSource>> _types =
             new HashMap<String, List<DataSource>>();
 
