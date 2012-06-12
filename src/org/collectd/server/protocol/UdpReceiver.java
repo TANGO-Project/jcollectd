@@ -18,20 +18,15 @@
 
 package org.collectd.server.protocol;
 
+import org.collectd.agent.api.DataSource;
 import org.collectd.agent.api.PacketBuilder;
-import org.collectd.agent.api.Type;
 import org.collectd.agent.protocol.Dispatcher;
 import org.collectd.agent.protocol.Network;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
-import java.net.NetworkInterface;
-import java.net.SocketException;
+import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.logging.Logger;
@@ -152,7 +147,7 @@ public class UdpReceiver {
         }
         for (int i = 0; i < nvalues; i++) {
             Number val;
-            if (types[i] == Type.COUNTER.value) {
+            if (types[i] == DataSource.Type.COUNTER.value()) {
                 val = is.readLong();
             } else {
                 //collectd uses x86 host order for doubles

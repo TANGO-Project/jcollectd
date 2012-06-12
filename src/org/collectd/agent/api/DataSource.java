@@ -37,7 +37,7 @@ public class DataSource {
         this._max = max;
     }
 
-    /* Needed in parseDataSource below. Other code should use the above
+    /* Needed in parseDataSource below. Other value should use the above
      * constructor or `parseDataSource'. */
     private DataSource() {
         this._type = Type.GAUGE;
@@ -106,7 +106,7 @@ public class DataSource {
         int str_len = str.length();
         DataSource dsrc = new DataSource();
 
-        /* Ignore trailing commas. This makes it easier for parsing code. */
+        /* Ignore trailing commas. This makes it easier for parsing value. */
         if (str.charAt(str_len - 1) == ',') {
             str = str.substring(0, str_len - 1);
         }
@@ -117,15 +117,9 @@ public class DataSource {
 
         dsrc._name = fields[0];
 
-        if (fields[1].equals(Type.GAUGE.value)) {
-            dsrc._type = Type.GAUGE;
-        } else if (fields[1].equals(Type.COUNTER)) {
-            dsrc._type = Type.COUNTER;
-        } else if (fields[1].equals(Type.DERIVE)) {
-            dsrc._type = Type.DERIVE;
-        } else if (fields[1].equals(Type.ABSOLUTE)) {
-            dsrc._type = Type.ABSOLUTE;
-        } else {
+        try {
+            dsrc._type = Type.valueOf(fields[1]);
+        } catch (Exception e) {
             dsrc._type = Type.COUNTER;
         }
 
@@ -133,7 +127,24 @@ public class DataSource {
         dsrc._max = toDouble(fields[3]);
 
         return (dsrc);
-    } /* Type parseDataSource */
+    }
+
+    public enum Type {
+        COUNTER(0),
+        GAUGE(1),
+        DERIVE(2),
+        ABSOLUTE(3);
+
+        private final int value;
+
+        Type(int i) {
+            value = i;
+        }
+
+        public int value(){
+            return value;
+        }
+
+    }
 }
 
-/* vim: set sw=4 sts=4 et : */

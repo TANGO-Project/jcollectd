@@ -18,8 +18,8 @@
 
 package org.collectd.agent.protocol;
 
-import org.collectd.agent.api.DataSet;
 import org.collectd.agent.api.DataSource;
+import org.collectd.agent.api.DataSet;
 
 import java.io.*;
 import java.util.HashMap;
@@ -31,10 +31,6 @@ import java.util.StringTokenizer;
  * Parser for collectd/src/types.db format.
  */
 public class TypesDB {
-
-    //constants for generic type names
-    public static final String NAME_COUNTER = "counter";
-    public static final String NAME_GAUGE = "gauge";
 
     //List<Type> == plugin.h:data_set_t
     private final Map<String, List<DataSource>> _types =

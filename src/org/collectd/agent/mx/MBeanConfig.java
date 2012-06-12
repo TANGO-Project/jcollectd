@@ -18,7 +18,7 @@
 
 package org.collectd.agent.mx;
 
-import org.collectd.agent.protocol.TypesDB;
+import org.collectd.agent.api.DataSource;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -119,7 +119,7 @@ public class MBeanConfig {
                     String units = getAttribute(attr, "units");
                     String alias = getAttribute(attr, "alias");
                     if (type == null) {
-                        type = TypesDB.NAME_GAUGE;
+                        type = DataSource.Type.GAUGE.name();
                     }
                     MBeanAttribute mattr = new MBeanAttribute(attrName, type);
                     if (alias != null) {

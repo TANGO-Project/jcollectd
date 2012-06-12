@@ -22,12 +22,12 @@ package org.collectd.agent.api;
  * Java representation of collectd/src/plugin.h:notfication_t structure.
  */
 public class Notification extends Identifier {
-    private NotificationSeverity _severity;
+    private Severity _severity;
     private String _message;
 
     Notification(Identifier identifier, int severity, String message) {
         super(identifier);
-        _severity = NotificationSeverity.get(severity);
+        _severity = Severity.get(severity);
         _message = message;
     }
 
@@ -35,7 +35,7 @@ public class Notification extends Identifier {
         if(_severity != null){
             return _severity.name();
         }
-        return NotificationSeverity.UNKNOWN.name();
+        return Severity.UNKNOWN.name();
     }
 
     public String getMessage() {
@@ -47,6 +47,38 @@ public class Notification extends Identifier {
         sb.append(" [").append(getSeverityString()).append("] ");
         sb.append(_message);
         return sb.toString();
+    }
+
+    public enum Severity {
+        FAILURE(1),
+        WARNING(2),
+        UNKNOWN(3),
+        OKAY(4);
+
+        private static final Severity[] lookup = {UNKNOWN, FAILURE, WARNING, UNKNOWN, OKAY};
+        private static final String[] names = {FAILURE.name(), WARNING.name(), UNKNOWN.name(), OKAY.name()};
+
+        public static String[] names() {
+            return names;
+        }
+
+        public static Severity get(int severity) {
+            if (severity > 0 && severity < lookup.length) {
+                return lookup[severity];
+            }
+            return UNKNOWN;
+        }
+
+        private final int serverity;
+
+        Severity(int severity) {
+            this.serverity = severity;
+        }
+
+        public int value(){
+            return serverity;
+        }
+
     }
 
 }

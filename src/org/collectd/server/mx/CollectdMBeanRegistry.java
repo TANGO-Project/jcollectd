@@ -18,11 +18,10 @@
 
 package org.collectd.server.mx;
 
-import org.collectd.agent.api.Identifier;
-import org.collectd.agent.api.NotificationSeverity;
-import org.collectd.agent.api.Values;
 import org.collectd.agent.api.DataSource;
+import org.collectd.agent.api.Identifier;
 import org.collectd.agent.api.Notification;
+import org.collectd.agent.api.Values;
 import org.collectd.agent.protocol.Dispatcher;
 import org.collectd.agent.protocol.Network;
 import org.collectd.agent.protocol.TypesDB;
@@ -254,7 +253,7 @@ public class CollectdMBeanRegistry
 
     public MBeanNotificationInfo[] getNotificationInfo() {
         return new MBeanNotificationInfo[]{
-                new MBeanNotificationInfo((String[]) NotificationSeverity.names(),
+                new MBeanNotificationInfo(Notification.Severity.names(),
                         javax.management.Notification.class.getName(),
                         "Collectd Notifications"),
         };

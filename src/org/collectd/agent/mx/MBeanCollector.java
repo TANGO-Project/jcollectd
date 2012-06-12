@@ -18,16 +18,11 @@
 
 package org.collectd.agent.mx;
 
+import org.collectd.agent.api.DataSource;
 import org.collectd.agent.api.PacketBuilder;
-import org.collectd.agent.api.Type;
 import org.collectd.agent.protocol.Network;
-import org.collectd.agent.protocol.TypesDB;
 
-import javax.management.Descriptor;
-import javax.management.MBeanAttributeInfo;
-import javax.management.MBeanInfo;
-import javax.management.MBeanServerConnection;
-import javax.management.ObjectName;
+import javax.management.*;
 import javax.management.openmbean.CompositeData;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -141,7 +136,7 @@ public class MBeanCollector implements Runnable {
                           String typeInstance,
                           ObjectName name, MBeanAttribute attr,
                           Number val) {
-        if (Type.GAUGE.equals(attr.getDataType())) {
+        if (DataSource.Type.GAUGE.equals(attr.getDataType())) {
             val = val.doubleValue();
         } else {
             val = val.longValue();
@@ -204,11 +199,11 @@ public class MBeanCollector implements Runnable {
                             (Descriptor) _getDescriptor.invoke(attrInfo.get(attrName),
                                     (Object[]) null);
                     Object type = descriptor.getFieldValue(_metricTypeField);
-                    if (TypesDB.NAME_COUNTER.equals(type)) {
-                        if (attr.getTypeName().equals(TypesDB.NAME_GAUGE)) {
-                            attr.setTypeName(TypesDB.NAME_COUNTER);
+                    if (DataSource.Type.COUNTER.name().equals(type)) {
+                        if (attr.getTypeName().equals(DataSource.Type.GAUGE.name())) {
+                            attr.setTypeName(DataSource.Type.COUNTER.name());
                         }
-                        attr.setDataType(Type.COUNTER.value);
+                        attr.setDataType(DataSource.Type.COUNTER.value());
                     }
                 } catch (Exception e) {
                 }

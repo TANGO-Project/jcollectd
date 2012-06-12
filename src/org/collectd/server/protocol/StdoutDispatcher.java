@@ -18,9 +18,9 @@
 
 package org.collectd.server.protocol;
 
-import org.collectd.agent.api.Values;
 import org.collectd.agent.api.DataSource;
 import org.collectd.agent.api.Notification;
+import org.collectd.agent.api.Values;
 import org.collectd.agent.protocol.Dispatcher;
 import org.collectd.agent.protocol.Network;
 import org.collectd.agent.protocol.TypesDB;

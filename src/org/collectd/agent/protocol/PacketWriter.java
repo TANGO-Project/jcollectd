@@ -18,9 +18,8 @@
 
 package org.collectd.agent.protocol;
 
-import org.collectd.agent.api.Type;
-import org.collectd.agent.api.Values;
 import org.collectd.agent.api.DataSource;
+import org.collectd.agent.api.Values;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -119,9 +118,9 @@ public class PacketWriter {
         for (int i = 0; i < num; i++) {
             if (ds_len == 0) {
                 if (values.get(i) instanceof Double) {
-                    types[i] = (byte) Type.GAUGE.value;
+                    types[i] = (byte) DataSource.Type.GAUGE.value();
                 } else {
-                    types[i] = (byte) Type.COUNTER.value;
+                    types[i] = (byte) DataSource.Type.COUNTER.value();
                 }
             } else {
                 types[i] = (byte) ds.get(i).getType();
@@ -134,7 +133,7 @@ public class PacketWriter {
 
         for (int i = 0; i < num; i++) {
             Number value = values.get(i);
-            if (types[i] == Type.COUNTER.value) {
+            if (types[i] == DataSource.Type.COUNTER.value()) {
                 _os.writeLong(value.longValue());
             } else {
                 writeDouble(value.doubleValue());

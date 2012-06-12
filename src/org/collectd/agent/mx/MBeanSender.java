@@ -18,12 +18,12 @@
 
 package org.collectd.agent.mx;
 
-import org.collectd.agent.protocol.UdpSender;
 import org.collectd.agent.api.Notification;
 import org.collectd.agent.api.Values;
 import org.collectd.agent.protocol.Dispatcher;
 import org.collectd.agent.protocol.Network;
 import org.collectd.agent.protocol.Sender;
+import org.collectd.agent.protocol.UdpSender;
 
 import javax.management.MBeanServerConnection;
 import javax.management.MalformedObjectNameException;

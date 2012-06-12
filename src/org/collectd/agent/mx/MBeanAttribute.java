@@ -19,7 +19,6 @@
 package org.collectd.agent.mx;
 
 import org.collectd.agent.api.DataSource;
-import org.collectd.agent.api.Type;
 import org.collectd.agent.protocol.TypesDB;
 
 import java.util.List;
@@ -37,7 +36,7 @@ public class MBeanAttribute {
     private int _dataType;
 
     public MBeanAttribute(String attributeName) {
-        this(attributeName, Type.GAUGE.value);
+        this(attributeName, DataSource.Type.GAUGE.value());
     }
 
     private MBeanAttribute(String attributeName, int dataType) {
@@ -47,7 +46,7 @@ public class MBeanAttribute {
     private static int getDataType(String typeName) {
         List<DataSource> ds = _types.getType(typeName);
         if ((ds == null) || (ds.size() == 0)) {
-            return Type.GAUGE.value;
+            return DataSource.Type.GAUGE.value();
         } else {
             return ds.get(0).getType();
         }
@@ -62,10 +61,10 @@ public class MBeanAttribute {
         _dataType = dataType;
         _typeName = typeName;
         if (_typeName == null) {
-            if (dataType == Type.COUNTER.value) {
-                _typeName = TypesDB.NAME_COUNTER;
+            if (dataType == DataSource.Type.COUNTER.value()) {
+                _typeName = DataSource.Type.COUNTER.name();
             } else {
-                _typeName = TypesDB.NAME_GAUGE;
+                _typeName = DataSource.Type.GAUGE.name().toLowerCase();
             }
         }
         int ix = attributeName.indexOf('.');
