@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8" ?>
 <project xmlns:ivy="antlib:org.apache.ivy.ant" name="jcollectd" default="dist">
     <description>Java collectd</description>
 
@@ -57,7 +58,7 @@
         <copy todir="${classes.agent}/META-INF">
             <fileset dir="${src.dir}/META-INF"/>
         </copy>
-        <javac sourcepath="" srcdir="${src.dir}" destdir="${classes.agent}" debug="${debug}" source="1.6" target="1.6"
+        <javac sourcepath="" srcdir="${src.dir}" destdir="${classes.agent}" debug="${debug}" target="1.6"
                classpath="${classes.agent}">
             <include name="org/collectd/agent/**"/>
         </javac>
@@ -70,7 +71,7 @@
             <fileset dir="${src.dir}/META-INF"/>
         </copy>
         <javac sourcepath="" srcdir="${src.dir}" classpath="${classes.agent}" destdir="${classes.server}"
-               debug="${debug}" source="1.6" target="1.6">
+               debug="${debug}" target="1.6">
             <include name="org/collectd/server/**"/>
         </javac>
     </target>
@@ -81,7 +82,7 @@
         <ivy:retrieve conf="test" sync="true"/>
         <mkdir dir="${tests}"/>
         <javac srcdir="${test.dir}" destdir="${tests}" classpathref="classpath"
-               debug="${debug}" source="1.6" target="1.6">
+               debug="${debug}" target="1.6">
             <classpath path="${classes.agent}"/>
             <classpath path="${classes.server}"/>
         </javac>

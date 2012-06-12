@@ -117,11 +117,7 @@ public class DataSource {
 
         dsrc._name = fields[0];
 
-        try {
-            dsrc._type = Type.valueOf(fields[1]);
-        } catch (Exception e) {
-            dsrc._type = Type.COUNTER;
-        }
+        dsrc._type = Type.getType(fields[1]);
 
         dsrc._min = toDouble(fields[2]);
         dsrc._max = toDouble(fields[3]);
@@ -141,8 +137,16 @@ public class DataSource {
             value = i;
         }
 
-        public int value(){
+        public int value() {
             return value;
+        }
+
+        public static Type getType(String name) {
+            try {
+                return Type.valueOf(name);
+            } catch (Exception e) {
+            }
+            return DERIVE;
         }
 
     }
