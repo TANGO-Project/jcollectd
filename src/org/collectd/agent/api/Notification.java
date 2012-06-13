@@ -25,14 +25,14 @@ public class Notification extends Identifier {
     private Severity _severity;
     private String _message;
 
-    Notification(Identifier identifier, int severity, String message) {
-        super(identifier);
-        _severity = Severity.get(severity);
+    public Notification(Identifier build, Severity severity, String message) {
+        super(build);
+        _severity = severity;
         _message = message;
     }
 
     public String getSeverityString() {
-        if(_severity != null){
+        if (_severity != null) {
             return _severity.name();
         }
         return Severity.UNKNOWN.name();
@@ -62,21 +62,17 @@ public class Notification extends Identifier {
             return names;
         }
 
-        public static Severity get(int severity) {
+        public static Severity find(int severity) {
             if (severity > 0 && severity < lookup.length) {
                 return lookup[severity];
             }
             return UNKNOWN;
         }
 
-        private final int serverity;
+        public final int id;
 
         Severity(int severity) {
-            this.serverity = severity;
-        }
-
-        public int value(){
-            return serverity;
+            this.id = severity;
         }
 
     }

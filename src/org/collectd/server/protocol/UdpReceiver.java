@@ -19,9 +19,11 @@
 package org.collectd.server.protocol;
 
 import org.collectd.agent.api.DataSource;
+import org.collectd.agent.api.Notification;
 import org.collectd.agent.api.PacketBuilder;
 import org.collectd.agent.protocol.Dispatcher;
 import org.collectd.agent.protocol.Network;
+import org.collectd.agent.protocol.Part;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -182,55 +184,56 @@ public class UdpReceiver {
             total -= len;
             len -= Network.HEADER_LEN;
 
-            switch (type) {
-                case Network.TYPE_VALUES:
+            switch (Part.find(type)) {
+                case VALUES:
                     readValues(is, dataBuilder);
                     break;
-                case Network.TYPE_TIME:
-                    long tmp = is.readLong()*1000;
+                case TIME:
+                    long tmp = is.readLong() * 1000;
                     dataBuilder.time(tmp);
                     break;
-                case Network.TYPE_INTERVAL:
+                case INTERVAL:
                     long interval = is.readLong();
                     dataBuilder.interval(interval);
                     break;
-                case Network.TYPE_TIME_HIRES:
-                    long thi = is.readLong()*1000;
+                case TIME_HIRES:
+                    long thi = is.readLong() * 1000;
                     dataBuilder.time(thi);
                     break;
-                case Network.TYPE_INTERVAL_HIRES:
+                case INTERVAL_HIRES:
                     long ihi = is.readLong();
                     dataBuilder.interval(ihi);
                     break;
-                case Network.TYPE_HOST:
+                case HOST:
                     String host = readString(is, len);
                     dataBuilder.host(host);
                     break;
-                case Network.TYPE_PLUGIN:
+                case PLUGIN:
                     String plugin = readString(is, len);
                     dataBuilder.plugin(plugin);
                     break;
-                case Network.TYPE_PLUGIN_INSTANCE:
+                case PLUGIN_INSTANCE:
                     String pluginInstance = readString(is, len);
                     dataBuilder.pluginInstance(pluginInstance);
                     break;
-                case Network.TYPE_TYPE:
+                case TYPE:
                     String _type = readString(is, len);
                     dataBuilder.type(_type);
                     break;
-                case Network.TYPE_TYPE_INSTANCE:
+                case TYPE_INSTANCE:
                     String tI = readString(is, len);
                     dataBuilder.typeInstance(tI);
                     break;
-                case Network.TYPE_MESSAGE:
+                case MESSAGE:
                     String msg = readString(is, len);
                     dataBuilder.message(msg);
                     if (_dispatcher != null) {
                         _dispatcher.dispatch(dataBuilder.buildNotification());
                     }
                     break;
-                case Network.TYPE_SEVERITY:
+                case SEVERITY:
                     int sev = (int) is.readLong();
+                    dataBuilder.set(Notification.Severity.find(sev));
                     dataBuilder.severity(sev);
                     break;
                 default:

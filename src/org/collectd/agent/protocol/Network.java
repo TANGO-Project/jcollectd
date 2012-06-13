@@ -28,7 +28,7 @@ import java.util.logging.Logger;
  * jcd.* property configuration.
  * //TODO: simplify
  */
-public class Network implements INetwork {
+public class Network {
 
     static final int UINT8_LEN = 1;
     static final int UINT16_LEN = UINT8_LEN * 2;

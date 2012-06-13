@@ -15,7 +15,7 @@ public class PacketBuilder {
     private String type;
     private String typeInstance;
     private String message;
-    private int severity;
+    private Notification.Severity severity;
 
     public static PacketBuilder newInstance() {
         return new PacketBuilder();
@@ -57,7 +57,7 @@ public class PacketBuilder {
     }
 
     public PacketBuilder severity(int severity) {
-        this.severity = severity;
+        this.severity = Notification.Severity.find(severity);
         return this;
     }
 
@@ -100,5 +100,9 @@ public class PacketBuilder {
 
     public void addValue(Number val) {
         values.add(val);
+    }
+
+    public void set(Notification.Severity severity) {
+        this.severity = severity;
     }
 }

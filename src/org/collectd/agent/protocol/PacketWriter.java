@@ -67,12 +67,13 @@ public class PacketWriter {
 
         String type = data.getType();
 
-        writeString(Network.TYPE_HOST, data.getHost());
-        writeNumber(Network.TYPE_TIME, data.getTime() / 1000);
-        writeString(Network.TYPE_PLUGIN, data.getPlugin());
-        writeString(Network.TYPE_PLUGIN_INSTANCE, data.getPluginInstance());
-        writeString(Network.TYPE_TYPE, type);
-        writeString(Network.TYPE_TYPE_INSTANCE, data.getTypeInstance());
+        writeString(Part.HOST.id, data.getHost());
+        //TODO: support TIME_HIRES
+        writeNumber(Part.TIME.id, data.getTime() / 1000);
+        writeString(Part.PLUGIN.id, data.getPlugin());
+        writeString(Part.PLUGIN_INSTANCE.id, data.getPluginInstance());
+        writeString(Part.TYPE.id, type);
+        writeString(Part.TYPE_INSTANCE.id, data.getTypeInstance());
 
             List<DataSource> ds = _types.getType(type);
             List<Number> values = data.getList();
@@ -84,7 +85,8 @@ public class PacketWriter {
                 throw new IOException(msg);
             }
 
-            writeNumber(Network.TYPE_INTERVAL, data.getInterval());
+            //TODO: support INTERVAL_HIRES
+            writeNumber(Part.INTERVAL.id, data.getInterval());
             writeValues(ds, values);
 
     }
@@ -127,7 +129,7 @@ public class PacketWriter {
             }
         }
 
-        writeHeader(Network.TYPE_VALUES, len);
+        writeHeader(Part.VALUES.id, len);
         _os.writeShort(num);
         _os.write(types);
 
