@@ -4,7 +4,12 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import org.jcollectd.agent.api.DataSource;
+import org.jcollectd.agent.api.Identifier;
+import org.jcollectd.agent.api.PacketBuilder;
+import org.jcollectd.agent.api.Values;
 import org.jcollectd.agent.protocol.Network;
+import org.jcollectd.agent.protocol.TypesDB;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -113,7 +118,7 @@ public class Httpd {
 
         private static Pattern PUTVAL_PATTERN = Pattern.compile(
                 "PUTVAL (?<host>[^/]+)/(?<plugin>[^/-]+)(-(?<pluginInstance>[^/]+))?/(?<type>[^ /-]+)(-(?<typeInstance>[^ ]+))?" +
-                        "( interval=(?<interval>\\d+))?( (?<values>.+))");
+                        "( interval=(?<interval>\\d+))?( (?<time>\\d+):(?<values>[\\d\\.:]+))");
         private static Pattern PUTNOTIF_PATTERN = Pattern.compile("PUTVAL ([^/]+)/([^/-]+)(-([^/]))/([^/-]+)(-([^/]))( interval=([d]+))( (.+))\n");
 
 
@@ -125,22 +130,34 @@ public class Httpd {
             BufferedReader reader = new BufferedReader(new InputStreamReader(requestStream,
                     "UTF-8"));
 
-            StringBuilder builder = new StringBuilder();
             char[] buffer = new char[requestStream.available()];
             reader.read(buffer);
             Matcher matcher = PUTVAL_PATTERN.matcher(String.valueOf(buffer));
-
+            int counter = 0;
             while (matcher.find()) {
-                System.out.print(" host=" + matcher.group("host"));
-                System.out.print(" plugin=" + matcher.group("plugin"));
-                System.out.print(" pluginInstance=" + matcher.group("pluginInstance"));
-                System.out.print(" type=" + matcher.group("type"));
-                System.out.print(" typeInstance=" + matcher.group("typeInstance"));
-                System.out.print(" interval=" + matcher.group("interval"));
-                System.out.println(" values=" + matcher.group("values"));
+                Values packetValues = PacketBuilder.newInstance()
+                        .host(matcher.group("host"))
+                        .plugin(matcher.group("plugin"))
+                        .pluginInstance(matcher.group("pluginInstance"))
+                        .type(matcher.group("type"))
+                        .typeInstance(matcher.group("typeInstance"))
+                        .time(matcher.group("time"))
+                        .interval(matcher.group("interval")).buildValues();
+                packetValues.add(TypesDB.getInstance().getType(packetValues.getType()));
+                String values = matcher.group("values");
+                if (values != null) {
+                    for (String s : values.split(":")) {
+                        packetValues.addValue(s);
+                    }
+                }
+
+                System.out.println(packetValues.toString());
+
+
+                counter++;
             }
 
-            System.out.println("HTTP_POST " + buffer.length + " bytes in " + (System.currentTimeMillis() - start) + " ms");
+            System.out.println("HTTP_POST " + buffer.length + " bytes with " + counter + " identifiers in " + (System.currentTimeMillis() - start) + " ms");
 
             try {
 

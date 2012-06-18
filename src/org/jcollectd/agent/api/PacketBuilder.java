@@ -2,6 +2,7 @@ package org.jcollectd.agent.api;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -104,5 +105,20 @@ public class PacketBuilder {
 
     public void set(Notification.Severity severity) {
         this.severity = severity;
+    }
+
+    public PacketBuilder interval(String interval) {
+        interval(Long.parseLong(interval));
+        return this;
+    }
+
+    public PacketBuilder time(String time) {
+        interval(Long.parseLong(time));
+        return this;
+    }
+
+    public PacketBuilder addValue(String s) {
+        addValue(Double.parseDouble(s));
+        return this;
     }
 }

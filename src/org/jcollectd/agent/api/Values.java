@@ -63,4 +63,17 @@ public class Values extends Identifier{
     public void clearValues() {
             _values.clear();
     }
+
+    public void addValue(String s) {
+        try{
+            addValue(Integer.parseInt(s));
+        }
+        catch (NumberFormatException e){
+            addValue(Double.parseDouble(s));
+        }
+    }
+
+    public void add(List<DataSource> type) {
+        _ds.addAll(type);
+    }
 }
