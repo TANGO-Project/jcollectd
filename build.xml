@@ -58,9 +58,9 @@
         <copy todir="${classes.agent}/META-INF">
             <fileset dir="${src.dir}/META-INF"/>
         </copy>
-        <javac sourcepath="" srcdir="${src.dir}" destdir="${classes.agent}" debug="${debug}" target="1.6"
+        <javac sourcepath="" srcdir="${src.dir}" destdir="${classes.agent}" debug="${debug}" source="1.6" target="1.6"
                classpath="${classes.agent}">
-            <include name="org/collectd/agent/**"/>
+            <include name="org/jcollectd/agent/**"/>
         </javac>
     </target>
 
@@ -71,8 +71,8 @@
             <fileset dir="${src.dir}/META-INF"/>
         </copy>
         <javac sourcepath="" srcdir="${src.dir}" classpath="${classes.agent}" destdir="${classes.server}"
-               debug="${debug}" target="1.6">
-            <include name="org/collectd/server/**"/>
+               debug="${debug}" source="1.6" target="1.6">
+            <include name="org/jcollectd/server/**"/>
         </javac>
     </target>
 
@@ -82,7 +82,7 @@
         <ivy:retrieve conf="test" sync="true"/>
         <mkdir dir="${tests}"/>
         <javac srcdir="${test.dir}" destdir="${tests}" classpathref="classpath"
-               debug="${debug}" target="1.6">
+               debug="${debug}" source="1.6" target="1.6">
             <classpath path="${classes.agent}"/>
             <classpath path="${classes.server}"/>
         </javac>
@@ -119,9 +119,9 @@
                      excludes="**/*Test.class"/>
             <manifest>
                 <attribute name="Main-Class"
-                           value="org.collectd.server.mx.MBeanReceiver"/>
+                           value="org.jcollectd.server.mx.MBeanReceiver"/>
                 <attribute name="Premain-Class"
-                           value="org.collectd.server.mx.RemoteMBeanSender"/>
+                           value="org.jcollectd.server.mx.RemoteMBeanSender"/>
             </manifest>
         </jar>
     </target>
