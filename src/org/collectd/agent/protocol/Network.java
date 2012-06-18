@@ -52,7 +52,7 @@ public class Network {
     public static final int BUFFER_SIZE;
 
     private static final Properties _props = new Properties();
-    private static final String KEY_PREFIX = "jcd.";
+    public static final String KEY_PREFIX = "jcd.";
 
     static {
         loadProperties();

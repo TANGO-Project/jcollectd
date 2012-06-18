@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<project xmlns:ivy="antlib:org.apache.ivy.ant" name="jcollectd" default="dist">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="jcollectd" default="dist-full">
     <description>Java collectd</description>
 
     <!--GET IVY-->
@@ -111,18 +111,7 @@
         </junit>
     </target>
 
-    <target name="dist-agent">
-        <jar jarfile="${build.dir}/jcollectd-agent-${version}.jar">
-            <fileset dir="${classes.agent}"
-                     excludes="**/*Test.class"/>
-            <manifest>
-                <attribute name="Premain-Class"
-                           value="org.collectd.agent.mx.MBeanSender"/>
-            </manifest>
-        </jar>
-    </target>
-
-    <target name="dist-server">
+    <target name="dist" depends="test">
         <jar jarfile="${dist.jar}">
             <fileset dir="${classes.agent}"
                      excludes="**/*Test.class"/>
@@ -152,6 +141,6 @@
         </javadoc>
     </target>
 
-    <target name="dist" depends="test,dist-agent,dist-server,javadoc"/>
 
+    <target name="dist-full" depends="dist,javadoc"/>
 </project>

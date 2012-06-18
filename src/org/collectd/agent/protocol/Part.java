@@ -3,6 +3,10 @@ package org.collectd.agent.protocol;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Protocol Part types from collectd/src/network.h
+ * @see <a href="http://collectd.org/wiki/index.php/Binary_protocol">Collect Binary Protocol</a>
+ */
 public enum Part {
 
     UNKNOWN(-1),
