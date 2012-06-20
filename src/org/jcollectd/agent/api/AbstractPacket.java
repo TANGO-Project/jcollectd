@@ -58,7 +58,7 @@ abstract class AbstractPacket<T> implements Packet<T> {
 
     @Override
     public boolean defined(String instance) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return (instance != null) && (instance.length() > 0);
     }
 
 }
