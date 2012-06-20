@@ -1,21 +1,27 @@
 package org.jcollectd.agent.api;
 
+import org.jcollectd.agent.protocol.TypesDB;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class Values extends Identifier{
+public class Values extends Packet<List<Number>>{
     private List<Number> _values = new ArrayList<Number>();
-    private List<DataSource> _ds = new ArrayList<DataSource>();
-    private long interval;
+    private final List<DataSource> _ds;
 
-    Values(Identifier identifier) {
+    public Values(Identifier identifier) {
         super(identifier);
+        _ds = TypesDB.getInstance().getType(identifier.getType());
     }
 
-    Values(Identifier identifier, long interval, List<Number> values) {
+    public Values(Identifier identifier, List<Number> values) {
         this(identifier);
-        this.interval = interval;
-        _values = values;
+        _values.addAll(values);
+    }
+
+    @Override
+    public List<Number> getData() {
+        return _values;
     }
 
     public void addValue(Number value) {
@@ -52,14 +58,6 @@ public class Values extends Identifier{
         return sb.toString();
     }
 
-    public List<Number> getList() {
-        return _values;
-    }
-
-    public long getInterval() {
-        return interval;
-    }
-
     public void clearValues() {
             _values.clear();
     }
@@ -73,7 +71,7 @@ public class Values extends Identifier{
         }
     }
 
-    public void add(List<DataSource> type) {
-        _ds.addAll(type);
+    public void addValues(List<Number> values) {
+        _values.addAll(values);
     }
 }

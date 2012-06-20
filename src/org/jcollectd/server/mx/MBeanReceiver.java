@@ -38,7 +38,7 @@ public class MBeanReceiver
     private static final String DMX = "-D" + MX;
 
     public MBeanReceiver() {
-        setDispatcher(new CollectdMBeanRegistry());
+        setDispatcher(new CollectdMBeanRegistry("collectd"));
     }
 
     private void setup() throws Exception {

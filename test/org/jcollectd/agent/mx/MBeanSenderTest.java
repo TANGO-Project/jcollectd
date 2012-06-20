@@ -113,7 +113,7 @@ public class MBeanSenderTest
 
     public void dispatch(Values vl) {
         _numValues++;
-        if (vl.getPlugin().equals(PLUGIN)) {
+        if (vl.getIdentifier().getPlugin().equals(PLUGIN)) {
             _numMyValues++;
         }
     }

@@ -21,8 +21,8 @@ package org.jcollectd.server.protocol;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.jcollectd.agent.api.Identifier;
 import org.jcollectd.agent.api.Notification;
-import org.jcollectd.agent.api.PacketBuilder;
 import org.jcollectd.agent.api.Values;
 import org.jcollectd.agent.protocol.Dispatcher;
 import org.jcollectd.agent.protocol.PacketWriter;
@@ -49,22 +49,26 @@ public class ValueListTest extends TestCase {
     }
 
     private Values dummyValueList() {
+        Identifier identifier = Identifier.Builder.builder().host(HOST).time(now).plugin(PLUGIN).pluginInstance(ValueListTest.class.getName()).build();
 
-        Values vl = PacketBuilder.newInstance().host(HOST).interval(interval).time(now).plugin(PLUGIN).pluginInstance(ValueListTest.class.getName()).buildValues();
+        Values vl = new Values(identifier);
+        vl.setInterval(interval);
+
         for (double value : values) {
             vl.addValue(value);
         }
         return vl;
     }
 
-    private void dummyAssert(Values vl) {
-        assertEquals(vl.getHost(), HOST);
-        assertEquals(vl.getInterval(), interval);
-        assertEquals(vl.getTime(), now);
-        assertEquals(vl.getPlugin(), PLUGIN);
-        List<Number> vals = vl.getList();
+    private void dummyAssert(Values vals) {
+        Identifier identifier = vals.getIdentifier();
+        assertEquals(identifier.getHost(), HOST);
+        assertEquals(vals.getInterval(), interval);
+        assertEquals(identifier.getTime(), now);
+        assertEquals(identifier.getPlugin(), PLUGIN);
+        List<Number> _vals = vals.getData();
         for (int i = 0; i < values.length; i++) {
-            assertEquals(vals.get(i).doubleValue(), values[i]);
+            assertEquals(_vals.get(i).doubleValue(), values[i]);
         }
     }
 

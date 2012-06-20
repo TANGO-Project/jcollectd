@@ -19,7 +19,8 @@
 package org.jcollectd.agent.mx;
 
 import org.jcollectd.agent.api.DataSource;
-import org.jcollectd.agent.api.PacketBuilder;
+import org.jcollectd.agent.api.Identifier;
+import org.jcollectd.agent.api.Values;
 import org.jcollectd.agent.protocol.Network;
 
 import javax.management.*;
@@ -147,8 +148,7 @@ public class MBeanCollector implements Runnable {
             pluginInstance = _sender.getInstanceName();
         }
         String beanName = query.getAlias();
-        PacketBuilder builder = PacketBuilder.newInstance();
-        builder.interval(getInterval());
+        Identifier.Builder builder = Identifier.Builder.builder();
         builder.plugin(plugin);
         if (beanName == null) {
             beanName = getBeanName(null, name);
@@ -161,8 +161,10 @@ public class MBeanCollector implements Runnable {
         builder.pluginInstance(pluginInstance + "-" + beanName);
         builder.type(attr.getTypeName());
         builder.typeInstance(typeInstance);
-        builder.addValue(val);
-        _sender.dispatch(builder.buildValues());
+        Values values = new Values(builder.build());
+        values.addValue(val);
+        values.setInterval(getInterval());
+        _sender.dispatch(values);
     }
 
     void collect(MBeanQuery query, ObjectName name) throws Exception {

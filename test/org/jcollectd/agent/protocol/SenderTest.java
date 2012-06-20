@@ -21,8 +21,8 @@ package org.jcollectd.agent.protocol;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.jcollectd.agent.api.Identifier;
 import org.jcollectd.agent.api.Notification;
-import org.jcollectd.agent.api.PacketBuilder;
 import org.jcollectd.agent.api.Values;
 import org.jcollectd.server.protocol.ReceiverTest;
 import org.jcollectd.server.protocol.UdpReceiver;
@@ -81,24 +81,27 @@ public class SenderTest
     }
 
     private Values newValueList() {
-        Values vl = PacketBuilder.newInstance().plugin(PLUGIN).pluginInstance(PLUGIN_INSTANCE).interval(INTERVAL).type(TYPE).buildValues();
+        Identifier identifier = Identifier.Builder.builder().plugin(PLUGIN).pluginInstance(PLUGIN_INSTANCE).type(TYPE).build();
+        Values vl = new Values(identifier);
+        vl.setInterval(INTERVAL);
         return vl;
     }
 
-    private void assertValueList(Values vl,
+    private void assertValueList(Values vals,
                                  String host, long time)
             throws Exception {
+        Identifier identifier = vals.getIdentifier();
 
-        assertEquals(vl.getHost(), host);
-        assertEquals(vl.getTime() / 1000, time);
-        assertEquals("GOT: " + INTERVAL + " EXPECTED: " + vl.getInterval(),
-                vl.getInterval(), INTERVAL);
-        assertEquals("GOT: " + PLUGIN + " EXPECTED: " + vl.getPlugin(),
-                vl.getPlugin(), PLUGIN);
-        assertEquals("GOT: " + PLUGIN_INSTANCE + "EXPECTED: " + vl.getPluginInstance(),
-                PLUGIN_INSTANCE, vl.getPluginInstance());
-        assertEquals("GOT: " + TYPE + "EXPECTED: " + vl.getPluginInstance(),
-                vl.getType(), TYPE);
+        assertEquals(identifier.getHost(), host);
+        assertEquals(identifier.getTime() / 1000, time);
+        assertEquals("GOT: " + INTERVAL + " EXPECTED: " + vals.getInterval(),
+                vals.getInterval(), INTERVAL);
+        assertEquals("GOT: " + PLUGIN + " EXPECTED: " + identifier.getPlugin(),
+                identifier.getPlugin(), PLUGIN);
+        assertEquals("GOT: " + PLUGIN_INSTANCE + "EXPECTED: " + identifier.getPluginInstance(),
+                PLUGIN_INSTANCE, identifier.getPluginInstance());
+        assertEquals("GOT: " + TYPE + "EXPECTED: " + identifier.getPluginInstance(),
+                identifier.getType(), TYPE);
     }
 
     private void flush() throws Exception {
@@ -107,20 +110,22 @@ public class SenderTest
     }
 
     public void testGauge() throws Exception {
-        Values vl = newValueList();
+        Values values = newValueList();
         for (double val : dvals) {
-            vl.addValue(val);
+            values.addValue(val);
         }
-        _sender.dispatch(vl);
-        String host = vl.getHost();
-        long time = vl.getTime() / 1000;
+        Identifier identifier = values.getIdentifier();
+
+        _sender.dispatch(values);
+        String host = identifier.getHost();
+        long time = identifier.getTime() / 1000;
         flush();
         assertEquals(_values.size(), 1);
-        vl = _values.get(0);
-        assertValueList(vl, host, time);
-        assertEquals(vl.getList().size(), dvals.length);
+        values = _values.get(0);
+        assertValueList(values, host, time);
+        assertEquals(values.getData().size(), dvals.length);
         int i = 0;
-        for (Number num : vl.getList()) {
+        for (Number num : values.getData()) {
             assertEquals(num.getClass(), Double.class);
             assertEquals(num.doubleValue(), dvals[i++]);
         }
@@ -133,15 +138,16 @@ public class SenderTest
             vl.addValue(val);
         }
         _sender.dispatch(vl);
-        String host = vl.getHost();
-        long time = vl.getTime() / 1000;
+        Identifier identifier = vl.getIdentifier();
+        String host = identifier.getHost();
+        long time = identifier.getTime() / 1000;
         flush();
         assertEquals(_values.size(), 1);
         vl = _values.get(0);
         assertValueList(vl, host, time);
-        assertEquals(vl.getList().size(), lvals.length);
+        assertEquals(vl.getData().size(), lvals.length);
         int i = 0;
-        for (Number num : vl.getList()) {
+        for (Number num : vl.getData()) {
             assertEquals(num.getClass(), Long.class);
             assertEquals(num.longValue(), lvals[i++]);
         }

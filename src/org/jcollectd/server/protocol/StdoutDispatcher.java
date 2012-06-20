@@ -19,6 +19,7 @@
 package org.jcollectd.server.protocol;
 
 import org.jcollectd.agent.api.DataSource;
+import org.jcollectd.agent.api.Identifier;
 import org.jcollectd.agent.api.Notification;
 import org.jcollectd.agent.api.Values;
 import org.jcollectd.agent.protocol.Dispatcher;
@@ -37,15 +38,16 @@ public class StdoutDispatcher implements Dispatcher {
     private final boolean namesOnly =
             "true".equals(Network.getProperty("namesOnly"));
 
-    public void dispatch(Values vl) {
+    public void dispatch(Values vals) {
+        Identifier identifier = vals.getIdentifier();
         if (namesOnly) {
-            System.out.print("plugin=" + vl.getPlugin());
-            System.out.print(",pluginInstance=" + vl.getPluginInstance());
-            System.out.print(",type=" + vl.getType());
-            System.out.print(",typeInstance=" + vl.getTypeInstance());
-            List<DataSource> ds = vl.getDataSource();
+            System.out.print("plugin=" + identifier.getPlugin());
+            System.out.print(",pluginInstance=" + identifier.getPluginInstance());
+            System.out.print(",type=" + identifier.getType());
+            System.out.print(",typeInstance=" + identifier.getTypeInstance());
+            List<DataSource> ds = vals.getDataSource();
             if (ds == null) {
-                ds = TypesDB.getInstance().getType(vl.getType());
+                ds = TypesDB.getInstance().getType(identifier.getType());
             }
             if (ds != null) {
                 List<String> names = new ArrayList<String>();
@@ -56,7 +58,7 @@ public class StdoutDispatcher implements Dispatcher {
             }
             System.out.println();
         } else {
-            System.out.println(vl);
+            System.out.println(identifier);
         }
     }
 

@@ -18,9 +18,7 @@
 
 package org.jcollectd.server.protocol;
 
-import org.jcollectd.agent.api.DataSource;
-import org.jcollectd.agent.api.Notification;
-import org.jcollectd.agent.api.PacketBuilder;
+import org.jcollectd.agent.api.*;
 import org.jcollectd.agent.protocol.Dispatcher;
 import org.jcollectd.agent.protocol.Network;
 import org.jcollectd.agent.protocol.Part;
@@ -36,6 +34,8 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -144,7 +144,7 @@ public class UdpReceiver {
         return new String(buf, 0, len - 1); //-1 -> skip \0
     }
 
-    private void readValues(DataInputStream is, PacketBuilder vl)
+    private List<Number> readValues(DataInputStream is)
             throws IOException {
         byte[] dbuff = new byte[8];
         int nvalues = is.readUnsignedShort();
@@ -152,6 +152,7 @@ public class UdpReceiver {
         for (int i = 0; i < nvalues; i++) {
             types[i] = is.readByte();
         }
+        List<Number> values = new ArrayList<Number>();
         for (int i = 0; i < nvalues; i++) {
             Number val;
             if (types[i] == DataSource.Type.COUNTER.value()) {
@@ -162,21 +163,28 @@ public class UdpReceiver {
                 ByteBuffer bb = ByteBuffer.wrap(dbuff);
                 bb.order(ByteOrder.LITTLE_ENDIAN);
                 val = bb.getDouble();
+
             }
-            vl.addValue(val);
+            values.add(val);
         }
-        if (_dispatcher != null) {
-            _dispatcher.dispatch(vl.buildValues());
-        }
+        /*if (_dispatcher != null) {
+            _dispatcher.dispatch(values);
+        }*/
+        return values;
     }
 
-    public void parse(byte[] packet) throws IOException {
+    public Packet parse(byte[] packet) throws IOException {
         int total = packet.length;
         ByteArrayInputStream buffer =
                 new ByteArrayInputStream(packet);
         DataInputStream is =
                 new DataInputStream(buffer);
-        PacketBuilder dataBuilder = PacketBuilder.newInstance();
+        Identifier.Builder dataBuilder = Identifier.Builder.builder();
+
+        long interval = -1;
+        List<Number> values = null;
+        String msg = null;
+        Notification.Severity severity = null;
 
         while ((0 < total) && (total > Network.HEADER_LEN)) {
             int type = is.readUnsignedShort();
@@ -189,25 +197,24 @@ public class UdpReceiver {
             total -= len;
             len -= Network.HEADER_LEN;
 
+
             switch (Part.find(type)) {
                 case VALUES:
-                    readValues(is, dataBuilder);
+                    values = readValues(is);
                     break;
                 case TIME:
                     long tmp = is.readLong() * 1000;
                     dataBuilder.time(tmp);
                     break;
                 case INTERVAL:
-                    long interval = is.readLong();
-                    dataBuilder.interval(interval);
+                    interval = is.readLong();
                     break;
                 case TIME_HIRES:
                     long thi = is.readLong() * 1000;
                     dataBuilder.time(thi);
                     break;
                 case INTERVAL_HIRES:
-                    long ihi = is.readLong();
-                    dataBuilder.interval(ihi);
+                    interval = is.readLong();
                     break;
                 case HOST:
                     String host = readString(is, len);
@@ -230,21 +237,28 @@ public class UdpReceiver {
                     dataBuilder.typeInstance(tI);
                     break;
                 case MESSAGE:
-                    String msg = readString(is, len);
-                    dataBuilder.message(msg);
-                    if (_dispatcher != null) {
-                        _dispatcher.dispatch(dataBuilder.buildNotification());
-                    }
+                    msg = readString(is, len);
                     break;
                 case SEVERITY:
                     int sev = (int) is.readLong();
-                    dataBuilder.set(Notification.Severity.find(sev));
-                    dataBuilder.severity(sev);
+                    severity = Notification.Severity.find(sev);
                     break;
                 default:
                     break;
             }
         }
+        Identifier identifier = dataBuilder.build();
+        Packet packetObj = null;
+
+
+        if (values != null) {
+            packetObj = new Values(identifier,values);
+        } else if (msg != null && !msg.isEmpty()) {
+            packetObj = new Notification(identifier, severity, msg);
+
+        }
+        packetObj.setInterval(interval);
+        return packetObj;
     }
 
     public void listen() throws Exception {
@@ -264,7 +278,16 @@ public class UdpReceiver {
                     throw e;
                 }
             }
-            parse(packet.getData());
+            Packet data = parse(packet.getData());
+            if(_dispatcher != null){
+                if(data instanceof Notification){
+                    _dispatcher.dispatch((Notification) data);
+                }
+                else if(data instanceof Values){
+                    _dispatcher.dispatch((Values) data);
+                }
+            }
+
         }
     }
 

@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
 public class CollectdMBeanRegistry
         implements Dispatcher, NotificationBroadcaster, CollectdMBeanRegistryMBean {
 
-    private static final String DOMAIN = "collectd";
+    private String DOMAIN = "collectd";
     final static String STATUS = "__status__";
     final static String AVERAGE = "__avg__";
     final static String SUM = "__sum__";
@@ -58,6 +58,10 @@ public class CollectdMBeanRegistry
 
     final MBeanServer bs =
             ManagementFactory.getPlatformMBeanServer();
+
+    public CollectdMBeanRegistry(String jcd) {
+        DOMAIN = jcd;
+    }
 
     public void init() throws Exception {
         ObjectName name = new ObjectName(DOMAIN + ":" + "type=" + "MBeanRegistry");
@@ -80,35 +84,37 @@ public class CollectdMBeanRegistry
     }
 
     public void dispatch(Notification notif) {
-        if (excludeHost(notif)) {
+        if (excludeHost(notif.getIdentifier())) {
             return;
         }
         _broadcaster.sendNotification(new javax.management.
-                Notification(notif.getSeverityString(),
-                notif.getSource(),
+                Notification(notif.getSeverity().name(),
+                notif.getIdentifier().getSource(),
                 ++_notifSequence,
-                notif.getTime(),
+                notif.getIdentifier().getTime(),
                 notif.getMessage()));
     }
 
-    private String getRootName(String host, Values vl) {
+    private String getRootName(String host, Values vals) {
+        Identifier identifier = vals.getIdentifier();
         StringBuilder name = new StringBuilder();
         name.append(DOMAIN).append(':');
         if (host != null) {
             name.append("host=").append(host).append(',');
         }
-        name.append("plugin=").append(vl.getPlugin());
+        name.append("plugin=").append(identifier.getPlugin());
         if (host == null) {
             name.append(",*");
         }
         return name.toString();
     }
 
-    private String getPluginRootName(String pname, Values vl) {
+    private String getPluginRootName(String pname, Values vals) {
+        Identifier identifier = vals.getIdentifier();
         StringBuilder name = new StringBuilder();
         name.append(DOMAIN).append(':');
-        name.append("host=").append(vl.getHost()).append(',');
-        name.append("plugin=").append(vl.getPlugin()).append(',');
+        name.append("host=").append(identifier.getHost()).append(',');
+        name.append("plugin=").append(identifier.getPlugin()).append(',');
         name.append("name=");
 
         if (pname != null) {
@@ -132,22 +138,23 @@ public class CollectdMBeanRegistry
         return bean.get(attribute);
     }
 
-    private Map<String, Number> getMBean(Values vl) {
-        String instance = vl.getPluginInstance();
+    private Map<String, Number> getMBean(Values vals) {
+        Identifier identifier = vals.getIdentifier();
+        String instance = identifier.getPluginInstance();
 
         StringBuilder bname = new StringBuilder();
-        bname.append(getRootName(vl.getHost(), vl));
-        if (!vl.defined(instance)) {
-            List<DataSource> ds = vl.getDataSource();
+        bname.append(getRootName(identifier.getHost(), vals));
+        if (!identifier.defined(instance)) {
+            List<DataSource> ds = vals.getDataSource();
             if (ds == null) {
-                ds = TypesDB.getInstance().getType(vl.getType());
+                ds = TypesDB.getInstance().getType(identifier.getType());
             }
             if ((ds != null) && (ds.size() > 1)) {
                 //e.g. ds = {rx,tx} -> type=if_octets,typeInstance=en1 
-                instance = vl.getTypeInstance();
+                instance = identifier.getTypeInstance();
             }
         }
-        if (vl.defined(instance)) {
+        if (identifier.defined(instance)) {
             bname.append(',').append("name=").append(instance);
         }
 
@@ -170,12 +177,12 @@ public class CollectdMBeanRegistry
             bs.registerMBean(new CollectdMBean(metrics), name);
 
             if (_doSummary) {
-                registerSummaryMBean(vl, metrics);
+                registerSummaryMBean(vals, metrics);
             }
 
             if (_doPluginSummary) {
                 if (instance != null && !instance.isEmpty()) {
-                    registerPluginSummaryMBean(vl, metrics);
+                    registerPluginSummaryMBean(vals, metrics);
                 }
             }
         } catch (Exception e) {
@@ -210,19 +217,20 @@ public class CollectdMBeanRegistry
         return summary;
     }
 
-    public void dispatch(Values vl) {
-        if (excludeHost(vl)) {
+    public void dispatch(Values vals) {
+        Identifier identifier = vals.getIdentifier();
+        if (excludeHost(identifier)) {
             return;
         }
-        String type = vl.getType();
-        List<Number> values = vl.getList();
+        String type = identifier.getType();
+        List<Number> values = vals.getData();
         int size = values.size();
-        Map<String, Number> metrics = getMBean(vl);
+        Map<String, Number> metrics = getMBean(vals);
         String key;
 
         if (size == 1) {
-            String ti = vl.getTypeInstance();
-            if (vl.defined(ti)) {
+            String ti = identifier.getTypeInstance();
+            if (identifier.defined(ti)) {
                 key = type + "." + ti;
             } else {
                 key = type;
@@ -230,12 +238,12 @@ public class CollectdMBeanRegistry
             metrics.put(key, values.get(0));
 
         } else {
-            List<DataSource> ds = vl.getDataSource();
+            List<DataSource> ds = vals.getDataSource();
             if (ds == null) {
-                ds = TypesDB.getInstance().getType(vl.getType());
+                ds = TypesDB.getInstance().getType(identifier.getType());
             }
             for (int i = 0; i < size; i++) {
-                if (ds != null) {
+                if (ds != null && ds.size() > i) {
                     key = type + "." + ds.get(i).getName();
                 } else {
                     key = type + "." + "unknown" + i;

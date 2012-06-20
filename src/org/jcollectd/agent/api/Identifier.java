@@ -4,47 +4,38 @@ import java.util.Date;
 
 public class Identifier {
 
-    long _time;
-    String _host;
-    String _plugin;
-    String _pluginInstance = "";
-    String _type = "";
-    String _typeInstance = "";
+    private long time;
+    private String host;
+    private String plugin;
+    private String pluginInstance;
+    private String type;
+    private String typeInstance;
 
-    Identifier() {
-    }
-
-    Identifier(Identifier identifier) {
-        _time = identifier._time;
-        _host = identifier._host;
-        _plugin = identifier._plugin;
-        _pluginInstance = identifier._pluginInstance;
-        _type = identifier._type;
-        _typeInstance = identifier._typeInstance;
+    private Identifier() {
     }
 
     public long getTime() {
-        return _time;
+        return time;
     }
 
     public String getHost() {
-        return _host;
+        return host;
     }
 
     public String getPlugin() {
-        return _plugin;
+        return plugin;
     }
 
     public String getPluginInstance() {
-        return _pluginInstance;
+        return pluginInstance;
     }
 
     public String getType() {
-        return _type;
+        return type;
     }
 
     public String getTypeInstance() {
-        return _typeInstance;
+        return typeInstance;
     }
 
 
@@ -54,11 +45,11 @@ public class Identifier {
 
     public String getSource() {
         StringBuffer sb = new StringBuffer();
-        appendToSource(sb, _host);
-        appendToSource(sb, _plugin);
-        appendToSource(sb, _pluginInstance);
-        appendToSource(sb, _type);
-        appendToSource(sb, _typeInstance);
+        appendToSource(sb, host);
+        appendToSource(sb, plugin);
+        appendToSource(sb, pluginInstance);
+        appendToSource(sb, type);
+        appendToSource(sb, typeInstance);
         return sb.toString();
     }
 
@@ -73,10 +64,86 @@ public class Identifier {
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append('[').append(new Date(_time)).append("] ");
+        sb.append('[').append(new Date(time)).append("] ");
         sb.append(getSource());
         return sb.toString();
     }
 
+    public static class Builder {
+        private long time;
+        private String host;
+        private String plugin;
+        private String pluginInstance;
+        private String type;
+        private String typeInstance;
+
+        public Builder() {
+        }
+
+        public Builder(Identifier identifier) {
+            time = identifier.time;
+            host = identifier.host;
+            plugin = identifier.plugin;
+            pluginInstance = identifier.pluginInstance;
+            type = identifier.type;
+            typeInstance = identifier.typeInstance;
+        }
+
+        public Builder time(long time) {
+            this.time = time;
+            return this;
+        }
+
+        public Builder host(String host) {
+            this.host = host;
+            return this;
+        }
+
+        public Builder plugin(String plugin) {
+            this.plugin = strip(plugin);
+            return this;
+        }
+
+        public Builder pluginInstance(String pluginInstance) {
+            this.pluginInstance = strip(pluginInstance);
+            return this;
+        }
+
+        public Builder type(String type) {
+            this.type = type;
+            return this;
+        }
+
+        public Builder typeInstance(String typeInstance) {
+            this.typeInstance = typeInstance;
+            return this;
+        }
+
+        public Identifier build() {
+            Identifier identifier = new Identifier();
+            identifier.time = time;
+            identifier.host = host;
+            identifier.plugin = plugin;
+            identifier.pluginInstance = pluginInstance;
+            identifier.type = type;
+            identifier.typeInstance = typeInstance;
+            return identifier;
+        }
+
+        private String strip(String string) {
+            if (string != null)
+                string = string.replaceAll("[\\s\"]+", "_");
+            return string;
+        }
+
+        public static Builder builder() {
+            return new Builder();
+        }
+
+        public static Builder builder(Identifier identifier) {
+            return new Builder(identifier);
+        }
+
+    }
 
 }

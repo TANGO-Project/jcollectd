@@ -19,6 +19,7 @@
 package org.jcollectd.agent.protocol;
 
 import org.jcollectd.agent.api.DataSource;
+import org.jcollectd.agent.api.Identifier;
 import org.jcollectd.agent.api.Values;
 
 import java.io.ByteArrayOutputStream;
@@ -62,8 +63,10 @@ public class PacketWriter {
         _bos.reset();
     }
 
-    public void write(Values data)
+    public void write(Values vals)
             throws IOException {
+
+        Identifier data = vals.getIdentifier();
 
         String type = data.getType();
 
@@ -76,7 +79,7 @@ public class PacketWriter {
         writeString(Part.TYPE_INSTANCE.id, data.getTypeInstance());
 
             List<DataSource> ds = _types.getType(type);
-            List<Number> values = data.getList();
+            List<Number> values = vals.getData();
 
             if ((ds != null) && (ds.size() != values.size())) {
                 String msg =
@@ -86,7 +89,7 @@ public class PacketWriter {
             }
 
             //TODO: support INTERVAL_HIRES
-            writeNumber(Part.INTERVAL.id, data.getInterval());
+            writeNumber(Part.INTERVAL.id, vals.getInterval());
             writeValues(ds, values);
 
     }
