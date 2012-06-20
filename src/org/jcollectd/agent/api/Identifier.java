@@ -2,72 +2,31 @@ package org.jcollectd.agent.api;
 
 import java.util.Date;
 
-public class Identifier {
+/**
+ * Created with IntelliJ IDEA.
+ * User: andrus
+ * Date: 6/20/12
+ * Time: 12:03 PM
+ * To change this template use File | Settings | File Templates.
+ */
+public interface Identifier {
+    long getTime();
 
-    private long time;
-    private String host;
-    private String plugin;
-    private String pluginInstance;
-    private String type;
-    private String typeInstance;
+    String getHost();
 
-    private Identifier() {
-    }
+    String getPlugin();
 
-    public long getTime() {
-        return time;
-    }
+    String getPluginInstance();
 
-    public String getHost() {
-        return host;
-    }
+    String getType();
 
-    public String getPlugin() {
-        return plugin;
-    }
+    String getTypeInstance();
 
-    public String getPluginInstance() {
-        return pluginInstance;
-    }
+    String getSource();
 
-    public String getType() {
-        return type;
-    }
+    String toString();
 
-    public String getTypeInstance() {
-        return typeInstance;
-    }
-
-
-    public boolean defined(String val) {
-        return (val != null) && (val.length() > 0);
-    }
-
-    public String getSource() {
-        StringBuffer sb = new StringBuffer();
-        appendToSource(sb, host);
-        appendToSource(sb, plugin);
-        appendToSource(sb, pluginInstance);
-        appendToSource(sb, type);
-        appendToSource(sb, typeInstance);
-        return sb.toString();
-    }
-
-    private void appendToSource(StringBuffer sb, String value) {
-        if (defined(value)) {
-            if (sb.length() != 0) {
-                sb.append('/');
-            }
-            sb.append(value);
-        }
-    }
-
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append('[').append(new Date(time)).append("] ");
-        sb.append(getSource());
-        return sb.toString();
-    }
+    boolean defined(String instance);
 
     public static class Builder {
         private long time;
@@ -81,12 +40,12 @@ public class Identifier {
         }
 
         public Builder(Identifier identifier) {
-            time = identifier.time;
-            host = identifier.host;
-            plugin = identifier.plugin;
-            pluginInstance = identifier.pluginInstance;
-            type = identifier.type;
-            typeInstance = identifier.typeInstance;
+            time = identifier.getTime();
+            host = identifier.getHost();
+            plugin = identifier.getPlugin();
+            pluginInstance = identifier.getPlugin();
+            type = identifier.getPlugin();
+            typeInstance = identifier.getType();
         }
 
         public Builder time(long time) {
@@ -120,7 +79,7 @@ public class Identifier {
         }
 
         public Identifier build() {
-            Identifier identifier = new Identifier();
+            IdentifierImpl identifier = new IdentifierImpl();
             identifier.time = time;
             identifier.host = host;
             identifier.plugin = plugin;
@@ -146,4 +105,80 @@ public class Identifier {
 
     }
 
+    static class IdentifierImpl implements Identifier {
+
+        private long time;
+        private String host;
+        private String plugin;
+        private String pluginInstance;
+        private String type;
+        private String typeInstance;
+
+        IdentifierImpl() {
+        }
+
+        @Override
+        public long getTime() {
+            return time;
+        }
+
+        @Override
+        public String getHost() {
+            return host;
+        }
+
+        @Override
+        public String getPlugin() {
+            return plugin;
+        }
+
+        @Override
+        public String getPluginInstance() {
+            return pluginInstance;
+        }
+
+        @Override
+        public String getType() {
+            return type;
+        }
+
+        @Override
+        public String getTypeInstance() {
+            return typeInstance;
+        }
+
+        @Override
+        public String getSource() {
+            StringBuffer sb = new StringBuffer();
+            appendToSource(sb, host);
+            appendToSource(sb, plugin);
+            appendToSource(sb, pluginInstance);
+            appendToSource(sb, type);
+            appendToSource(sb, typeInstance);
+            return sb.toString();
+        }
+
+        private void appendToSource(StringBuffer sb, String value) {
+            if (defined(value)) {
+                if (sb.length() != 0) {
+                    sb.append('/');
+                }
+                sb.append(value);
+            }
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append('[').append(new Date(time)).append("] ");
+            sb.append(getSource());
+            return sb.toString();
+        }
+
+        @Override
+        public boolean defined(String instance) {
+            return (instance != null) && (instance.length() > 0);
+        }
+
+    }
 }

@@ -25,8 +25,8 @@ public class Notification extends Packet<String>{
     private Severity severity;
     private String message;
 
-    public Notification(Identifier identifier, Severity severity, String msg) {
-        super(identifier);
+    public Notification(Identifier Identifier, Severity severity, String msg) {
+        super(Identifier);
         this.severity = severity != null ? severity : Severity.UNKNOWN;
         this.message = msg;
     }

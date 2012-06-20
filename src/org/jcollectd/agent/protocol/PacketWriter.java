@@ -63,10 +63,8 @@ public class PacketWriter {
         _bos.reset();
     }
 
-    public void write(Values vals)
+    public void write(Values data)
             throws IOException {
-
-        Identifier data = vals.getIdentifier();
 
         String type = data.getType();
 
@@ -79,7 +77,7 @@ public class PacketWriter {
         writeString(Part.TYPE_INSTANCE.id, data.getTypeInstance());
 
             List<DataSource> ds = _types.getType(type);
-            List<Number> values = vals.getData();
+            List<Number> values = data.getData();
 
             if ((ds != null) && (ds.size() != values.size())) {
                 String msg =
@@ -89,7 +87,7 @@ public class PacketWriter {
             }
 
             //TODO: support INTERVAL_HIRES
-            writeNumber(Part.INTERVAL.id, vals.getInterval());
+            writeNumber(Part.INTERVAL.id, data.getInterval());
             writeValues(ds, values);
 
     }

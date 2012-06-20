@@ -90,18 +90,16 @@ public class SenderTest
     private void assertValueList(Values vals,
                                  String host, long time)
             throws Exception {
-        Identifier identifier = vals.getIdentifier();
-
-        assertEquals(identifier.getHost(), host);
-        assertEquals(identifier.getTime() / 1000, time);
+        assertEquals(vals.getHost(), host);
+        assertEquals(vals.getTime() / 1000, time);
         assertEquals("GOT: " + INTERVAL + " EXPECTED: " + vals.getInterval(),
                 vals.getInterval(), INTERVAL);
-        assertEquals("GOT: " + PLUGIN + " EXPECTED: " + identifier.getPlugin(),
-                identifier.getPlugin(), PLUGIN);
-        assertEquals("GOT: " + PLUGIN_INSTANCE + "EXPECTED: " + identifier.getPluginInstance(),
-                PLUGIN_INSTANCE, identifier.getPluginInstance());
-        assertEquals("GOT: " + TYPE + "EXPECTED: " + identifier.getPluginInstance(),
-                identifier.getType(), TYPE);
+        assertEquals("GOT: " + PLUGIN + " EXPECTED: " + vals.getPlugin(),
+                vals.getPlugin(), PLUGIN);
+        assertEquals("GOT: " + PLUGIN_INSTANCE + "EXPECTED: " + vals.getPluginInstance(),
+                PLUGIN_INSTANCE, vals.getPluginInstance());
+        assertEquals("GOT: " + TYPE + "EXPECTED: " + vals.getPluginInstance(),
+                vals.getType(), TYPE);
     }
 
     private void flush() throws Exception {
@@ -114,11 +112,10 @@ public class SenderTest
         for (double val : dvals) {
             values.addValue(val);
         }
-        Identifier identifier = values.getIdentifier();
 
         _sender.dispatch(values);
-        String host = identifier.getHost();
-        long time = identifier.getTime() / 1000;
+        String host = values.getHost();
+        long time = values.getTime() / 1000;
         flush();
         assertEquals(_values.size(), 1);
         values = _values.get(0);
@@ -138,9 +135,8 @@ public class SenderTest
             vl.addValue(val);
         }
         _sender.dispatch(vl);
-        Identifier identifier = vl.getIdentifier();
-        String host = identifier.getHost();
-        long time = identifier.getTime() / 1000;
+        String host = vl.getHost();
+        long time = vl.getTime() / 1000;
         flush();
         assertEquals(_values.size(), 1);
         vl = _values.get(0);

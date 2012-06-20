@@ -61,11 +61,10 @@ public class ValueListTest extends TestCase {
     }
 
     private void dummyAssert(Values vals) {
-        Identifier identifier = vals.getIdentifier();
-        assertEquals(identifier.getHost(), HOST);
+        assertEquals(vals.getHost(), HOST);
         assertEquals(vals.getInterval(), interval);
-        assertEquals(identifier.getTime(), now);
-        assertEquals(identifier.getPlugin(), PLUGIN);
+        assertEquals(vals.getTime(), now);
+        assertEquals(vals.getPlugin(), PLUGIN);
         List<Number> _vals = vals.getData();
         for (int i = 0; i < values.length; i++) {
             assertEquals(_vals.get(i).doubleValue(), values[i]);

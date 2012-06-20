@@ -18,10 +18,8 @@
 
 package org.jcollectd.server.mx;
 
-import org.jcollectd.agent.api.DataSource;
-import org.jcollectd.agent.api.Identifier;
+import org.jcollectd.agent.api.*;
 import org.jcollectd.agent.api.Notification;
-import org.jcollectd.agent.api.Values;
 import org.jcollectd.agent.protocol.Dispatcher;
 import org.jcollectd.agent.protocol.Network;
 import org.jcollectd.agent.protocol.TypesDB;
@@ -84,25 +82,24 @@ public class CollectdMBeanRegistry
     }
 
     public void dispatch(Notification notif) {
-        if (excludeHost(notif.getIdentifier())) {
+        if (excludeHost(notif)) {
             return;
         }
         _broadcaster.sendNotification(new javax.management.
                 Notification(notif.getSeverity().name(),
-                notif.getIdentifier().getSource(),
+                notif.getSource(),
                 ++_notifSequence,
-                notif.getIdentifier().getTime(),
+                notif.getTime(),
                 notif.getMessage()));
     }
 
     private String getRootName(String host, Values vals) {
-        Identifier identifier = vals.getIdentifier();
         StringBuilder name = new StringBuilder();
         name.append(DOMAIN).append(':');
         if (host != null) {
             name.append("host=").append(host).append(',');
         }
-        name.append("plugin=").append(identifier.getPlugin());
+        name.append("plugin=").append(vals.getPlugin());
         if (host == null) {
             name.append(",*");
         }
@@ -110,11 +107,10 @@ public class CollectdMBeanRegistry
     }
 
     private String getPluginRootName(String pname, Values vals) {
-        Identifier identifier = vals.getIdentifier();
         StringBuilder name = new StringBuilder();
         name.append(DOMAIN).append(':');
-        name.append("host=").append(identifier.getHost()).append(',');
-        name.append("plugin=").append(identifier.getPlugin()).append(',');
+        name.append("host=").append(vals.getHost()).append(',');
+        name.append("plugin=").append(vals.getPlugin()).append(',');
         name.append("name=");
 
         if (pname != null) {
@@ -139,22 +135,21 @@ public class CollectdMBeanRegistry
     }
 
     private Map<String, Number> getMBean(Values vals) {
-        Identifier identifier = vals.getIdentifier();
-        String instance = identifier.getPluginInstance();
+        String instance = vals.getPluginInstance();
 
         StringBuilder bname = new StringBuilder();
-        bname.append(getRootName(identifier.getHost(), vals));
-        if (!identifier.defined(instance)) {
+        bname.append(getRootName(vals.getHost(), vals));
+        if (!vals.defined(instance)) {
             List<DataSource> ds = vals.getDataSource();
             if (ds == null) {
-                ds = TypesDB.getInstance().getType(identifier.getType());
+                ds = TypesDB.getInstance().getType(vals.getType());
             }
             if ((ds != null) && (ds.size() > 1)) {
                 //e.g. ds = {rx,tx} -> type=if_octets,typeInstance=en1 
-                instance = identifier.getTypeInstance();
+                instance = vals.getTypeInstance();
             }
         }
-        if (identifier.defined(instance)) {
+        if (vals.defined(instance)) {
             bname.append(',').append("name=").append(instance);
         }
 
@@ -218,19 +213,18 @@ public class CollectdMBeanRegistry
     }
 
     public void dispatch(Values vals) {
-        Identifier identifier = vals.getIdentifier();
-        if (excludeHost(identifier)) {
+        if (excludeHost(vals)) {
             return;
         }
-        String type = identifier.getType();
+        String type = vals.getType();
         List<Number> values = vals.getData();
         int size = values.size();
         Map<String, Number> metrics = getMBean(vals);
         String key;
 
         if (size == 1) {
-            String ti = identifier.getTypeInstance();
-            if (identifier.defined(ti)) {
+            String ti = vals.getTypeInstance();
+            if (vals.defined(ti)) {
                 key = type + "." + ti;
             } else {
                 key = type;
@@ -240,7 +234,7 @@ public class CollectdMBeanRegistry
         } else {
             List<DataSource> ds = vals.getDataSource();
             if (ds == null) {
-                ds = TypesDB.getInstance().getType(identifier.getType());
+                ds = TypesDB.getInstance().getType(vals.getType());
             }
             for (int i = 0; i < size; i++) {
                 if (ds != null && ds.size() > i) {

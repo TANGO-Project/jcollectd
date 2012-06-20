@@ -247,14 +247,14 @@ public class UdpReceiver {
                     break;
             }
         }
-        Identifier identifier = dataBuilder.build();
+        Identifier Identifier = dataBuilder.build();
         Packet packetObj = null;
 
 
         if (values != null) {
-            packetObj = new Values(identifier,values);
+            packetObj = new Values(Identifier,values);
         } else if (msg != null && !msg.isEmpty()) {
-            packetObj = new Notification(identifier, severity, msg);
+            packetObj = new Notification(Identifier, severity, msg);
 
         }
         packetObj.setInterval(interval);
