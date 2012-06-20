@@ -21,7 +21,7 @@ package org.jcollectd.agent.api;
 /**
  * Java representation of collectd/src/plugin.h:notfication_t structure.
  */
-public class Notification extends Packet<String>{
+public class Notification extends AbstractPacket<String> {
     private Severity severity;
     private String message;
 
@@ -47,7 +47,7 @@ public class Notification extends Packet<String>{
     }
 
     @Override
-    String getData() {
+    public String getData() {
         return message;
     }
 

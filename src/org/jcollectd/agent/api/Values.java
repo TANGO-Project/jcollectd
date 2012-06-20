@@ -5,7 +5,7 @@ import org.jcollectd.agent.protocol.TypesDB;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Values extends Packet<List<Number>>{
+public class Values extends AbstractPacket<List<Number>> {
     private List<Number> _values = new ArrayList<Number>();
     private final List<DataSource> _ds;
 
