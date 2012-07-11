@@ -1,0 +1,239 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Jcollectd by jcollectd</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Jcollectd</h1>
+        <p>Java integration for collectd</p>
+
+        <p class="view"><a href="https://github.com/jcollectd/jcollectd">View the Project on GitHub <small>jcollectd/jcollectd</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/jcollectd/jcollectd/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/jcollectd/jcollectd/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/jcollectd/jcollectd">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h2>jcollectd - Java integration for collectd</h2>
+
+<h3>collectd</h3>
+
+<p><a href="http://collectd.org">collectd</a> is a lightweight, extensible system statistics gathering
+daemon written in C for performance and portability.  In-process
+plugins can be written in C or Perl.  Out-of-process plugins are
+executed on each collection interval or can put values via the
+unixsock plugin.</p>
+
+<h3>jcollectd</h3>
+
+<p>The jcollectd package implements the collectd protocol in Java, making
+it possible for Java applications to push data into collectd over the
+wire.  A Java app can configure JMX MBean attributes to be collected,
+or use the Java client API directly. </p>
+
+<p>The listener side of the protocol is also supported, including an
+implementation that registers JMX MBeans making it possible to view
+collectd data using a graphical tool such as jconsole.</p>
+
+<p>There is no installation process for jcollectd, as all required files
+are self-contained in <em>collectd.jar</em> with no dependecies other than
+Java version 5 or higher.  The command-line and java configuration
+options required to use the package are described below.</p>
+
+<h3>MBeanReceiver</h3>
+
+<p>The <strong>MBeanReceiver</strong> class listens for collectd packets and publishes the
+data as JMX MBeans.  A summary MBean is created to aggregate metrics, where
+the attributes values are the average across all instances.
+The MBeans can be viewed using a tool such as the standard jconsole.
+The MBeanReceiver can be started using the following command:</p>
+
+<pre><code>    java -jar collectd.jar
+</code></pre>
+
+<h4>Examples</h4>
+
+<ul>
+<li>
+<p>Listen on the default IPv4 multicast group <strong>239.192.74.66:25826</strong>:</p>
+
+<pre><code>java -jar collectd.jar -jconsole
+</code></pre>
+</li>
+<li>
+<p>Listen on the IPv4 unicast address <strong>127.0.0.1:25827</strong> and start
+jconsole attached locally to the collectd.jar process:</p>
+
+<pre><code>java -Djcd.laddr=127.0.0.1:25827 -jar collectd.jar -jconsole
+</code></pre>
+</li>
+<li>
+<p>Listen on the default IPv4 multicast group and allow remote JMX
+connections to RMI/TCP port <em>25826</em>:</p>
+
+<pre><code>java -Dcom.sun.management.jmxremote.port=25826 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -jar collectd.jar
+</code></pre>
+</li>
+<li>
+<p>Connect to the MBeanServer example above from another machine:</p>
+
+<pre><code>jconsole the-remote-hostname:25826
+</code></pre>
+</li>
+</ul><h4>Configuration</h4>
+
+<ul>
+<li>
+<p>jcd.laddr - UDP listen address, the default is <strong>239.192.74.66:25826</strong>.
+Example:</p>
+
+<pre><code>jcd.laddr=localhost:25826
+</code></pre>
+</li>
+<li>
+<p>jcd.ifaddr - The multicast network interface, default is any.
+Example:</p>
+
+<pre><code>jcd.ifaddr=eth2
+</code></pre>
+</li>
+<li>
+<p>jcd.typesdb - collectd types database files, default is types.db from collectd.jar
+Example:</p>
+
+<pre><code>jcd.typesdb=/opt/collectd/lib/types.db:./mytypes.db
+</code></pre>
+</li>
+<li>
+<p>jcd.mx.summary - Enable summary MBean aggregator, the default is false.
+Example:</p>
+
+<pre><code>jcd.mx.summary=true
+</code></pre>
+</li>
+<li>
+<p>jcd.mx.pluginsummary - Enable summary MBean aggregator for each plugin (each means with multiple type instances), the default is false.
+Example:</p>
+
+<pre><code>jcd.mx.pluginsummary=true
+</code></pre>
+</li>
+<li>
+<p>jcd.mx.hosts - Filter displayed hosts using a regex, the default is .*.
+Example:</p>
+
+<pre><code>jcd.mx.hosts=dev|qa
+</code></pre>
+</li>
+</ul><h3>MBeanSender</h3>
+
+<p>Any Java application can be configured to publish MBean data without
+any code changes.  The following example will push java.lang:* MBeans
+to the default collectd multicast group:</p>
+
+<pre><code>    java -Djcd.tmpl=java -javaagent:collectd.jar YourMainClass
+</code></pre>
+
+<p>Tomcat example:</p>
+
+<pre><code>    export CATALINA_OPTS="-Djcd.instance=hudson -Djcd.dest=udp://10.1.0.102 -Djcd.tmpl=java,tc -javaagent:collectd.jar"
+    ./bin/catalina.sh start
+</code></pre>
+
+<h4>Configuration</h4>
+
+<p>The jcd.* properties can be defined as System properties or in the
+jcd.properties file:</p>
+
+<ul>
+<li>
+<p>jcd.dest - UDP destination(s), the default is
+<strong>239.192.74.66:25826</strong>.  Example:</p>
+
+<pre><code>jcd.dest=udp://localhost:25826
+</code></pre>
+</li>
+<li>
+<p>jcd.tmpl - jcollectd.xml MBean filter templates (see etc/).  Example:</p>
+
+<pre><code>jcd.tmpl=java,tc
+</code></pre>
+</li>
+<li>
+<p>jcd.host - The collectd host (Hostname in collectd.conf) defaults to InetAddress.getLocalHost().getHostName().  Example:</p>
+
+<pre><code>jcd.host=myhost
+</code></pre>
+</li>
+<li>
+<p>jcd.instance - The collectd Plugin Instance, defaults to
+<em>java.lang:type=Runtime:Name</em>.  Example:</p>
+
+<pre><code>jcd.instance=tc01
+</code></pre>
+</li>
+<li>
+<p>jcd.beans - ObjectName(s) which are not defined in a filter
+template.  The ObjectName can be a pattern or fully qualified.
+Multiple ObjectNames are delimited using <code>#</code>.  All attributes
+for the matching MBeans will be collected where the attribute value
+is a <em>Number</em>.  Example:</p>
+
+<pre><code>jcd.beans=mydomain:*#foo:type=Stats#bar:type=App,*
+</code></pre>
+</li>
+<li>
+<p>jcd.properties - Path to the jcd.properties file which can be used
+to define all of the above properties.  Example:</p>
+
+<pre><code>jcd.properties=/path/to/my-jcd.properties
+</code></pre>
+</li>
+</ul><h4>XML MBean filters</h4>
+
+<p>The MBean filters provide a way to define exactly which MBean
+attributes should be collected, how they should be named in collectd
+and what type the metric is.  See the etc/ directory for examples.
+The format is currently subject to change pending feedback and
+documentation will follow.</p>
+
+<h3>Download</h3>
+
+<ul>
+<li><p><a href="http://github.com/hyperic/jcollectd">git repo</a></p></li>
+<li><p><a href="http://support.hyperic.com/download/attachments/60621258/jcollectd-0.1.0.tar.gz">tarball</a></p></li>
+</ul><h3>See Also</h3>
+
+<ul>
+<li><p><a href="http://collectd.org">collectd</a> - the system statistics collection daemon</p></li>
+<li><p><a href="http://marc.info/?l=collectd&amp;w=2&amp;r=1&amp;s=jmx&amp;q=b">collectd jmx plugin</a> - Embeds a JVM in collectd</p></li>
+<li><p><a href="http://code.google.com/p/jmxetric/">jmxetric</a> - JMX injector for Ganglia</p></li>
+</ul><h3>About</h3>
+
+<p>Copyright (c) 2009 <a href="http://www.hyperic.com/">Hyperic, Inc.</a> - See LICENSE</p>
+
+<p>For feedback and discussion, please use collectd's mailinglist: collectd at verplant.org</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/jcollectd">jcollectd</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
