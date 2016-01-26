@@ -29,7 +29,9 @@ public class Values extends AbstractPacket<List<Number>> {
     }
 
     public List<DataSource> getDataSource() {
-        if (_ds.size() > 0) {
+        if (_ds == null) {
+            return null;
+        } else if (_ds.size() > 0) {
             return _ds;
         } else {
             return null;

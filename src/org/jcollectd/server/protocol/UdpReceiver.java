@@ -155,15 +155,14 @@ public class UdpReceiver {
         List<Number> values = new ArrayList<Number>();
         for (int i = 0; i < nvalues; i++) {
             Number val;
-            if (types[i] == DataSource.Type.COUNTER.value()) {
-                val = is.readLong();
-            } else {
+            if (types[i] == DataSource.Type.GAUGE.value()) {
                 //collectd uses x86 host order for doubles
                 is.read(dbuff);
                 ByteBuffer bb = ByteBuffer.wrap(dbuff);
                 bb.order(ByteOrder.LITTLE_ENDIAN);
                 val = bb.getDouble();
-
+            } else {
+                val = is.readLong();
             }
             values.add(val);
         }
@@ -182,6 +181,7 @@ public class UdpReceiver {
         Identifier.Builder dataBuilder = Identifier.Builder.builder();
 
         long interval = -1;
+        boolean hires = false;
         List<Number> values = null;
         String msg = null;
         Notification.Severity severity = null;
@@ -203,18 +203,20 @@ public class UdpReceiver {
                     values = readValues(is);
                     break;
                 case TIME:
-                    long tmp = is.readLong() * 1000;
+                    long tmp = is.readLong();
                     dataBuilder.time(tmp);
                     break;
                 case INTERVAL:
                     interval = is.readLong();
                     break;
                 case TIME_HIRES:
-                    long thi = is.readLong() * 1000;
+                    long thi = is.readLong();
                     dataBuilder.time(thi);
+                    hires = true;
                     break;
                 case INTERVAL_HIRES:
                     interval = is.readLong();
+                    hires = true;
                     break;
                 case HOST:
                     String host = readString(is, len);
@@ -258,6 +260,7 @@ public class UdpReceiver {
 
         }
         packetObj.setInterval(interval);
+        packetObj.setHires(hires);
         return packetObj;
     }
 
