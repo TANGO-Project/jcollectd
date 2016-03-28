@@ -3,6 +3,7 @@ package org.jcollectd.agent.api;
 abstract class AbstractPacket<T> implements Packet<T> {
     private Identifier identifier;
     private long interval;
+    private boolean hires = false;
 
     AbstractPacket(Identifier identifier) {
         if(identifier == null){
@@ -61,4 +62,9 @@ abstract class AbstractPacket<T> implements Packet<T> {
         return (instance != null) && (instance.length() > 0);
     }
 
+    @Override
+    public boolean isHires() { return hires; }
+
+    @Override
+    public void setHires(boolean hires) { this.hires = hires; }
 }
