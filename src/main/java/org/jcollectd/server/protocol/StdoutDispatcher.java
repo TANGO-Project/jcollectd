@@ -55,6 +55,11 @@ public class StdoutDispatcher implements Dispatcher {
             System.out.println();
         } else {
             System.out.println(vals);
+            System.out.println(vals.getType());
+            vals.getTypeInstance();
+            for (Number value : vals.getData()) {
+                System.out.println(value.toString());
+            }
         }
     }
 

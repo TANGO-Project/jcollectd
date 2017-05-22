@@ -69,6 +69,7 @@ public class ReceiverTest extends TestCase {
     DatagramSocket createSocket() throws IOException {
         DatagramSocket socket = new DatagramSocket();
         _receiver.setListenAddress("127.0.0.1");
+        _receiver.setPort(25826); //Default port? "25826"
         return socket;
     }
 

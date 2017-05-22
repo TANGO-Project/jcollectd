@@ -91,7 +91,7 @@ public class HttpReceiver {
             httpReceiver.addContext("/jcollectd");
             httpReceiver.listen();
         }
-    }                                       ;
+    }
 
     private static class CollectdPostHandler implements HttpHandler {
 

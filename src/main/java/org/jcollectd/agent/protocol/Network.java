@@ -37,7 +37,7 @@ public class Network {
     public static final int HEADER_LEN = UINT16_LEN * 2;
 
     public static final int DEFAULT_PORT = 25826;
-    public static final String DEFAULT_V4_ADDR = "239.192.74.66";
+    public static final String DEFAULT_V4_ADDR = "0.0.0.0"; //"127.0.0.1";//"239.192.74.66"; //RK Changed this here
     public static final String DEFAULT_V6_ADDR = "ff18::efc0:4a42";
 
 

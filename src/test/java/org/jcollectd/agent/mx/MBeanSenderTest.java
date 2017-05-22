@@ -18,6 +18,14 @@
 
 package org.jcollectd.agent.mx;
 
+import java.lang.management.ManagementFactory;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 import junit.framework.TestCase;
 import org.jcollectd.agent.api.Notification;
 import org.jcollectd.agent.api.Values;
@@ -25,14 +33,6 @@ import org.jcollectd.agent.protocol.Dispatcher;
 import org.jcollectd.server.mx.CollectdMBean;
 import org.jcollectd.server.protocol.ReceiverTest;
 import org.jcollectd.server.protocol.UdpReceiver;
-
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import java.lang.management.ManagementFactory;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Logger;
 
 public class MBeanSenderTest
         extends TestCase
@@ -65,8 +65,8 @@ public class MBeanSenderTest
     protected void tearDown() throws Exception {
         super.tearDown();
         _receiverTest.tearDown();
-        _log.info(_numValues + " ValueLists dispatched");
-        _log.info(_numNotif + " Notifications dispatched");
+        _log.log(Level.INFO, "{0} ValueLists dispatched", _numValues);
+        _log.log(Level.INFO, "{0} Notifications dispatched", _numNotif);
     }
 
     private static void pause() throws Exception {
@@ -107,10 +107,12 @@ public class MBeanSenderTest
         assertTrue(_numMyValues > n);
     }
 
+    @Override
     public void dispatch(Notification notification) {
         _numNotif++;
     }
 
+    @Override
     public void dispatch(Values vl) {
         _numValues++;
         if (vl.getPlugin().equals(PLUGIN)) {

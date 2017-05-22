@@ -18,11 +18,6 @@
 
 package org.jcollectd.server.protocol;
 
-import org.jcollectd.agent.api.*;
-import org.jcollectd.agent.protocol.Dispatcher;
-import org.jcollectd.agent.protocol.Network;
-import org.jcollectd.agent.protocol.Part;
-
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -36,13 +31,22 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.jcollectd.agent.api.DataSource;
+import org.jcollectd.agent.api.Identifier;
+import org.jcollectd.agent.api.Notification;
+import org.jcollectd.agent.api.Packet;
+import org.jcollectd.agent.api.Values;
+import org.jcollectd.agent.protocol.Dispatcher;
+import org.jcollectd.agent.protocol.Network;
+import org.jcollectd.agent.protocol.Part;
 
 /**
  * collectd UDP protocol receiver.
  * See collectd/src/network.c:parse_packet
  */
-public class UdpReceiver {
+public class UdpReceiver implements Runnable {
 
     private static final Logger _log =
             Logger.getLogger(UdpReceiver.class.getName());
@@ -269,10 +273,16 @@ public class UdpReceiver {
     }
 
     void listen(DatagramSocket socket) throws IOException {
+        socket.setSoTimeout(30000); //30 second time out
         while (true) {
             byte[] buf = new byte[Network.BUFFER_SIZE];
+            //RK added last 2 arguments
             DatagramPacket packet = new DatagramPacket(buf, buf.length);
             try {
+//                System.out.println("Inet Address: " + socket.getInetAddress());
+//                System.out.println("Local Address: " + socket.getLocalAddress());
+//                System.out.println("Port: " + socket.getPort());
+//                System.out.println("Local Port: " + socket.getLocalPort());
                 socket.receive(packet);
             } catch (SocketException e) {
                 if (_isShutdown) {
@@ -305,4 +315,19 @@ public class UdpReceiver {
     public static void main(String[] args) throws Exception {
         new UdpReceiver(new StdoutDispatcher()).listen();
     }
+    
+    @Override
+    public void run() {
+        try {
+            /**
+             * This class was made runnable as the listen method blocks, placing
+             * it in a separate thread allows this blocking action not to stop 
+             * everything else.
+             */
+            this.listen();
+        } catch (Exception ex) {
+            Logger.getLogger(UdpReceiver.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }    
+    
 }
