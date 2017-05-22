@@ -18,8 +18,16 @@
 
 package org.jcollectd.server.mx;
 
-import javax.management.*;
 import java.util.Map;
+import javax.management.Attribute;
+import javax.management.AttributeList;
+import javax.management.AttributeNotFoundException;
+import javax.management.DynamicMBean;
+import javax.management.InvalidAttributeValueException;
+import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanException;
+import javax.management.MBeanInfo;
+import javax.management.ReflectionException;
 
 /**
  * Wrap a Map&lt;String,Number&gt; as a DynamicMBean.

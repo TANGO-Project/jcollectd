@@ -18,13 +18,14 @@
 
 package org.jcollectd.server.protocol;
 
-import org.jcollectd.agent.api.*;
+import java.util.ArrayList;
+import java.util.List;
+import org.jcollectd.agent.api.DataSource;
+import org.jcollectd.agent.api.Notification;
+import org.jcollectd.agent.api.Values;
 import org.jcollectd.agent.protocol.Dispatcher;
 import org.jcollectd.agent.protocol.Network;
 import org.jcollectd.agent.protocol.TypesDB;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Dispatch collectd data to stdout.

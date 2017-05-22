@@ -18,19 +18,22 @@
 
 package org.jcollectd.agent.mx;
 
-import org.jcollectd.agent.api.DataSource;
-import org.jcollectd.agent.api.Identifier;
-import org.jcollectd.agent.api.Values;
-import org.jcollectd.agent.protocol.Network;
-
-import javax.management.*;
-import javax.management.openmbean.CompositeData;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.management.Descriptor;
+import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanInfo;
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
+import javax.management.openmbean.CompositeData;
+import org.jcollectd.agent.api.DataSource;
+import org.jcollectd.agent.api.Identifier;
+import org.jcollectd.agent.api.Values;
+import org.jcollectd.agent.protocol.Network;
 
 /**
  * Query MBeans and dispatch results upstream.

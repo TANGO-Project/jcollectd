@@ -18,10 +18,9 @@
 
 package org.jcollectd.agent.mx;
 
+import java.util.List;
 import org.jcollectd.agent.api.DataSource;
 import org.jcollectd.agent.protocol.TypesDB;
-
-import java.util.List;
 
 /**
  * MBean attribute to collectd metric metadata mapper.
@@ -45,7 +44,7 @@ public class MBeanAttribute {
 
     private static int getDataType(String typeName) {
         List<DataSource> ds = _types.getType(typeName);
-        if ((ds == null) || (ds.size() == 0)) {
+        if ((ds == null) || (ds.isEmpty())) {
             return DataSource.Type.GAUGE.value();
         } else {
             return ds.get(0).getType();

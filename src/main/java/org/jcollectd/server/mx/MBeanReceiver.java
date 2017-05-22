@@ -18,12 +18,11 @@
 
 package org.jcollectd.server.mx;
 
-import org.jcollectd.server.protocol.UdpReceiver;
-
-import javax.management.MBeanServerFactory;
 import java.lang.management.ManagementFactory;
 import java.net.DatagramSocket;
 import java.net.MulticastSocket;
+import javax.management.MBeanServerFactory;
+import org.jcollectd.server.protocol.UdpReceiver;
 
 /**
  * Extend UdpReceiver, dispatching collectd data to a

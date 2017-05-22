@@ -18,13 +18,16 @@
 
 package org.jcollectd.agent.protocol;
 
-import org.jcollectd.agent.api.Notification;
-import org.jcollectd.agent.api.Values;
-
 import java.io.IOException;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
+import java.net.MulticastSocket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
+import org.jcollectd.agent.api.Notification;
+import org.jcollectd.agent.api.Values;
 
 /**
  * collectd UDP protocol sender.

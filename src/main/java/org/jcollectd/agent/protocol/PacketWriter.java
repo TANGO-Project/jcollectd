@@ -18,16 +18,14 @@
 
 package org.jcollectd.agent.protocol;
 
-import org.jcollectd.agent.api.DataSource;
-import org.jcollectd.agent.api.Identifier;
-import org.jcollectd.agent.api.Values;
-
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.List;
+import org.jcollectd.agent.api.DataSource;
+import org.jcollectd.agent.api.Values;
 
 /**
  * collectd/src/network.c:network_write

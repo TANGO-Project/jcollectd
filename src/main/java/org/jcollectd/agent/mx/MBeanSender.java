@@ -18,16 +18,6 @@
 
 package org.jcollectd.agent.mx;
 
-import org.jcollectd.agent.api.Notification;
-import org.jcollectd.agent.api.Values;
-import org.jcollectd.agent.protocol.Dispatcher;
-import org.jcollectd.agent.protocol.Network;
-import org.jcollectd.agent.protocol.Sender;
-import org.jcollectd.agent.protocol.UdpSender;
-
-import javax.management.MBeanServerConnection;
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 import java.lang.management.ManagementFactory;
@@ -40,6 +30,15 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.management.MBeanServerConnection;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+import org.jcollectd.agent.api.Notification;
+import org.jcollectd.agent.api.Values;
+import org.jcollectd.agent.protocol.Dispatcher;
+import org.jcollectd.agent.protocol.Network;
+import org.jcollectd.agent.protocol.Sender;
+import org.jcollectd.agent.protocol.UdpSender;
 
 /**
  * Process -javaagent configuration and schedule MBeanCollector objects.

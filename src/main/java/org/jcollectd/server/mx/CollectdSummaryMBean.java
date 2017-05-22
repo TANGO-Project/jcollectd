@@ -18,12 +18,12 @@
 
 package org.jcollectd.server.mx;
 
+import java.util.Map;
+import java.util.Set;
 import javax.management.AttributeNotFoundException;
 import javax.management.MBeanException;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Aggregate metric values and return the average as the attribute values.

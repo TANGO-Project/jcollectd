@@ -4,12 +4,6 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import org.jcollectd.agent.api.Identifier;
-import org.jcollectd.agent.api.Values;
-import org.jcollectd.agent.protocol.Dispatcher;
-import org.jcollectd.agent.protocol.Network;
-import org.jcollectd.server.mx.CollectdMBeanRegistry;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,6 +20,11 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.jcollectd.agent.api.Identifier;
+import org.jcollectd.agent.api.Values;
+import org.jcollectd.agent.protocol.Dispatcher;
+import org.jcollectd.agent.protocol.Network;
+import org.jcollectd.server.mx.CollectdMBeanRegistry;
 
 public class HttpReceiver {
 

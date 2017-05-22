@@ -18,9 +18,9 @@
 
 package org.jcollectd.agent.mx;
 
-import javax.management.ObjectName;
 import java.util.HashSet;
 import java.util.Set;
+import javax.management.ObjectName;
 
 /**
  * Container for MBeanAttribute objects and

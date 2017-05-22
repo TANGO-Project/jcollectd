@@ -18,15 +18,14 @@
 
 package org.jcollectd.server.mx;
 
-import org.jcollectd.agent.mx.MBeanSender;
-
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXServiceURL;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 import java.util.Properties;
 import java.util.logging.Logger;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
+import javax.management.remote.JMXServiceURL;
+import org.jcollectd.agent.mx.MBeanSender;
 
 /**
  * Out-of-process MBeanSender, polling a remote JMX MBeanServer.

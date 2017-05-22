@@ -18,10 +18,9 @@
 
 package org.jcollectd.agent.protocol;
 
+import java.io.IOException;
 import org.jcollectd.agent.api.Notification;
 import org.jcollectd.agent.api.Values;
-
-import java.io.IOException;
 
 /**
  * Protocol independent Sender interface.
