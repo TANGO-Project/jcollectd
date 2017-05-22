@@ -3,7 +3,7 @@ jdk:
   - oraclejdk8
   - oraclejdk7
   - openjdk7
-script: ant
+script: mvn install -DskipTest -q
 install: /bin/true 
 before_install:
   - sudo hostname "$(hostname | cut -c1-63)"
