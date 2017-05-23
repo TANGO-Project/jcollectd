@@ -1,9 +1,8 @@
-language: java
-jdk:
+install: true
+jdk: 
   - oraclejdk8
   - oraclejdk7
   - openjdk7
-  
-install: true
-
-script: - mvn install -Dmaven.test.skip=true -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+language: java
+script: 
+  - mvn install -Dmaven.test.skip=true -DskipTests=true -Dmaven.javadoc.skip=true -B -V
