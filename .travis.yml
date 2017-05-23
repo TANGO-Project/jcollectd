@@ -3,6 +3,7 @@ jdk:
   - oraclejdk8
   - oraclejdk7
   - openjdk7
-install: /bin/true
+  
+install: true
 
-script: - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true -B -V
+script: - mvn install -Dmaven.test.skip=true -DskipTests=true -Dmaven.javadoc.skip=true -B -V
